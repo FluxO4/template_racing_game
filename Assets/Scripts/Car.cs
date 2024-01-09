@@ -4,24 +4,44 @@ using UnityEngine;
 
 public class Car : MonoBehaviour
 {
-    // Start is called before the first frame update
-    Rigidbody rb;
-    public float speed = 5f; // The speed of the sphere
+    public WheelCollider[] backWheels = new WheelCollider[2];
+    public WheelCollider[] frontWheels = new WheelCollider[2];
+
+    public float maxAcceleration = 500f;
+    public float breakingForce = 300f;
+    public float maxTurnAngle = 15f;
+
+    float currentAcceleration = 0f;
+    float currentBreakForce = 0f;
+    float currentTurnAngle = 0f;
 
     void Start()
     {
-        
     }
 
     private void FixedUpdate()
     {
 
-        float moveVertical = Input.GetAxis("Vertical");
+        currentAcceleration = Input.GetAxis("Vertical") * maxAcceleration;
 
-        float rotateHorizontal = Input.GetAxis("Horizontal");
+        currentTurnAngle = Input.GetAxis("Horizontal") * maxTurnAngle;
 
-        Vector3 force = (Vector3.ProjectOnPlane(transform.forward, Vector3.up)).normalized * moveVertical * speed * Time.fixedDeltaTime;
-        rb.AddForce(force * 50f);
+        if (Input.GetKey(KeyCode.Space))
+            currentBreakForce = breakingForce;
+        else
+            currentBreakForce = 0;
+
+        foreach (var wheel in backWheels)
+        {
+            wheel.motorTorque = currentAcceleration;
+        }
+
+        foreach (var wheel in frontWheels)
+        {
+            // wheel.motorTorque = currentAcceleration;
+            wheel.steerAngle = currentTurnAngle;
+        }
+
     }
 
 
