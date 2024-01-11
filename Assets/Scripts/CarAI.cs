@@ -108,7 +108,8 @@ public class CarAI : MonoBehaviour
 
     void MoveCar(Vector3 direction)
     {
-        if (IsOnMeshCollider())
+       /* if (IsOnMeshCollider())*/
+       if(true)
         {
             rb.MovePosition(rb.position + direction * speed * Time.fixedDeltaTime);
             Quaternion targetRotation = Quaternion.LookRotation(direction);
