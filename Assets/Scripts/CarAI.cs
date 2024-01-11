@@ -118,8 +118,7 @@ public class CarAI : MonoBehaviour
 
     bool IsOnMeshCollider()
     {
-        return true;
-        /*RaycastHit hit;
+        RaycastHit hit;
         // Check if there's a MeshCollider directly below the car
         if (Physics.Raycast(transform.position, -Vector3.up, out hit, 1f)) // 1f is the max distance to check, adjust as needed
         {
@@ -128,7 +127,7 @@ public class CarAI : MonoBehaviour
                 return true;
             }
         }
-        return false;*/
+        return false;
     }
 }
 
