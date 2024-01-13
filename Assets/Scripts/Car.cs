@@ -1,3 +1,6 @@
+using System;
+using System.Net.Http.Headers;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Car : MonoBehaviour
@@ -15,6 +18,17 @@ public class Car : MonoBehaviour
 
     public float breakForce = 0.05f;
 
+    public bool isOnGround = false;
+
+    public bool IsOnGround
+    {
+        get { return isOnGround; }
+
+        set { isOnGround = value; }
+
+    }
+
+
     [SerializeField]
     float speed;
 
@@ -24,8 +38,6 @@ public class Car : MonoBehaviour
     float zTarget;
 
     Rigidbody rb;
-
-    
 
     private void Start()
     {
@@ -45,17 +57,38 @@ public class Car : MonoBehaviour
 
         //velocity += vertical * transform.forward * acceleration * Time.fixedDeltaTime;
 
+
         //// friction code starts
-        speed = rb.velocity.magnitude;
+        // speed = rb.velocity.magnitude;
 
-        float scaleFactorForward = Mathf.Max(0, (speed - forwardsFriction) / speed);
-        float scaleFactorSideways = Mathf.Max(0, (speed - sidewaysFriction) / speed);
+        //float scaleFactorForward = Mathf.Max(0, (speed - forwardsFriction) / speed);
+        //float scaleFactorSideways = Mathf.Max(0, (speed - sidewaysFriction) / speed);
 
-        Vector3 forwardsVelocity = Vector3.Project(velocity, transform.forward);
-        Vector3 sidewaysVelocity = velocity - forwardsVelocity;
+        Vector3 forwardsVelocity = Vector3.Project(rb.velocity, transform.forward);
+        Vector3 sidewaysVelocity = Vector3.Project(rb.velocity, transform.right);
 
-        forwardsVelocity *= scaleFactorForward;
-        sidewaysVelocity *= scaleFactorSideways;
+        Vector3 frictionVelocity = Vector3.zero;
+
+        if (forwardsVelocity.magnitude > forwardsFriction)
+        {
+            frictionVelocity += -forwardsVelocity.normalized * forwardsFriction;
+        } 
+        else
+        {
+            frictionVelocity = -forwardsVelocity;
+        }
+
+        if (sidewaysVelocity.magnitude > sidewaysFriction)
+        {
+            frictionVelocity += -sidewaysVelocity.normalized * sidewaysFriction;
+        }
+        else
+        {
+            frictionVelocity += -sidewaysVelocity;
+        }
+
+        //forwardsVelocity *= scaleFactorForward;
+        //sidewaysVelocity *= scaleFactorSideways;
 
         //velocity = forwardsVelocity + sidewaysVelocity;
 
@@ -65,7 +98,7 @@ public class Car : MonoBehaviour
 
         // velocity *= 1f / (1 + speed * airResistance / 80000);
 
-        Vector3 forces = Vector3.zero; ;
+        Vector3 forces = Vector3.zero;
 
         if (brake)
         {
@@ -76,15 +109,13 @@ public class Car : MonoBehaviour
         forces += transform.forward * acceleration * vertical;
 
         // friction
-        forces += -(forwardsVelocity + sidewaysVelocity) / Time.fixedDeltaTime;
+        forces += frictionVelocity / Time.fixedDeltaTime;
 
         // air resistance
-        forces += - rb.velocity.sqrMagnitude * (rb.velocity.normalized / Time.fixedDeltaTime) * airResistance;
+        forces += - rb.velocity.sqrMagnitude * (rb.velocity.normalized) * airResistance;
 
-        
+        rb.AddForce(forces, ForceMode.Acceleration);
 
-        rb.AddForce(forces);
-        
         speed = Vector3.ProjectOnPlane(rb.velocity, transform.up).magnitude;
 
         // Vector3 newPosition = rb.position + velocity * Time.fixedDeltaTime;

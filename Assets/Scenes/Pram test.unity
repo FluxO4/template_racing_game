@@ -315,7 +315,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 160880402}
-  m_Material: {fileID: 13400000, guid: 61893f90ddf16fa4ca8f94b451f963f5, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -426,7 +426,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2495931918793788509, guid: b60e9c1714e9b2d4e989a4eb96d6d87d, type: 3}
       propertyPath: m_TagString
-      value: Track
+      value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 3019809199773390567, guid: b60e9c1714e9b2d4e989a4eb96d6d87d, type: 3}
       propertyPath: m_LocalScale.x
@@ -631,7 +631,7 @@ GameObject:
   - component: {fileID: 724958618}
   m_Layer: 0
   m_Name: Car
-  m_TagString: Untagged
+  m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -648,14 +648,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e2cd1d14b16934bb476a67ec1591f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 2000
+  acceleration: 30
   forwardsFriction: 0.2
-  sidewaysFriction: 30
-  airResistance: 0.05
+  sidewaysFriction: 20
+  airResistance: 0.01
   angularVelocity: 2
   correctionFactor: 0.5
   maxTurningSpeed: 200
   breakForce: 5
+  isOnGround: 0
   speed: 0
   xTarget: 0
   zTarget: 0
@@ -701,6 +702,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 585935730}
+  - {fileID: 1490928221}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -821,7 +823,7 @@ GameObject:
   - component: {fileID: 936577592}
   m_Layer: 6
   m_Name: Plane (2)
-  m_TagString: Track
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -919,7 +921,7 @@ GameObject:
   - component: {fileID: 1394195191}
   m_Layer: 6
   m_Name: Plane (1)
-  m_TagString: Track
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -958,7 +960,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 934043944f2f4dc4c87e86457371b259, type: 2}
+  - {fileID: 2100000, guid: 3b576a034e6b068429ba7d8901e815c7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1003,3 +1005,61 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1490928220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1490928221}
+  - component: {fileID: 1490928222}
+  - component: {fileID: 1490928223}
+  m_Layer: 0
+  m_Name: On Ground Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1490928221
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490928220}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 724958621}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &1490928222
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490928220}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1490928223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490928220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5913d5f6cf073440ba0881c7b079478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
