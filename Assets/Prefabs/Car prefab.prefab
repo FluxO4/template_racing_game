@@ -283,8 +283,8 @@ Transform:
   - {fileID: 2460635255744148569}
   - {fileID: 2460635255735430608}
   - {fileID: 2460635256074808736}
-  - {fileID: 2460635255502493786}
   - {fileID: 2460635255858193552}
+  - {fileID: 2460635255502493786}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -329,12 +329,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e2cd1d14b16934bb476a67ec1591f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backWheels:
-  - {fileID: 2460635255502493784}
-  - {fileID: 2460635255858193558}
-  frontWheels:
-  - {fileID: 2460635255735430614}
-  - {fileID: 2460635256074808742}
+  colFrontLeft: {fileID: 0}
+  colFrontRight: {fileID: 0}
+  colBackLeft: {fileID: 0}
+  colBackRight: {fileID: 0}
+  frontLeft: {fileID: 0}
+  frontRight: {fileID: 0}
+  backLeft: {fileID: 0}
+  backRight: {fileID: 0}
   maxAcceleration: 500
   breakingForce: 300
   maxTurnAngle: 50
@@ -598,7 +600,7 @@ GameObject:
   - component: {fileID: 2460635255502493786}
   - component: {fileID: 2460635255502493784}
   m_Layer: 0
-  m_Name: Wheel (3)
+  m_Name: Wheel Back Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -618,7 +620,7 @@ Transform:
   m_Children:
   - {fileID: 2460635254609404027}
   m_Father: {fileID: 2460635254877592443}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!146 &2460635255502493784
 WheelCollider:
@@ -661,7 +663,7 @@ GameObject:
   - component: {fileID: 2460635255735430608}
   - component: {fileID: 2460635255735430614}
   m_Layer: 0
-  m_Name: Wheel (1)
+  m_Name: Wheel Front Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -757,7 +759,7 @@ GameObject:
   - component: {fileID: 2460635255858193552}
   - component: {fileID: 2460635255858193558}
   m_Layer: 0
-  m_Name: Wheel (4)
+  m_Name: Wheel Back Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -777,7 +779,7 @@ Transform:
   m_Children:
   - {fileID: 2460635254466457861}
   m_Father: {fileID: 2460635254877592443}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!146 &2460635255858193558
 WheelCollider:
@@ -820,7 +822,7 @@ GameObject:
   - component: {fileID: 2460635256074808736}
   - component: {fileID: 2460635256074808742}
   m_Layer: 0
-  m_Name: Wheel (2)
+  m_Name: Wheel Front Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
