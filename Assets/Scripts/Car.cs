@@ -43,12 +43,41 @@ public class Car : MonoBehaviour
     public Transform[] wheels = new Transform[4];
     Vector3[] wheelBuffer = new Vector3[4];
 
+    public enum StuntState
+    {
+        None,
+        Wheelie,
+        Backflip,
+        // front flip?
+        BarrelRoll,
+    }
+
+    public StuntState stuntState = StuntState.None;
+    public StuntState prevState = StuntState.None;
+
+    [SerializeField]
+    bool drifting;
+
+    bool braking = false;
+
+    Vector3 stuntTarget;
+
+    public float turnBiasBias = 0.2f;
+    public float turnBiasFactor = 1f;
+    float turnBias = 0;
+
+
+
+    float currentSidewaysFriction;
+    float currentForwardsFriction;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        currentSidewaysFriction = sidewaysFriction;
+        currentForwardsFriction = forwardsFriction;
 
-        
-        for(int i = 0; i < wheelBuffer.Length; ++i)
+        for (int i = 0; i < wheelBuffer.Length; ++i)
         {
             wheelBuffer[i] = wheels[i].position;
         }
@@ -77,20 +106,53 @@ public class Car : MonoBehaviour
         Vector3 forwardsVelocity = Vector3.Project(rb.velocity, transform.forward);
         Vector3 sidewaysVelocity = Vector3.Project(rb.velocity, transform.right);
 
+        Vector3 forces = Vector3.zero;
+
+        float targetForwardsFriction = forwardsFriction;
+        float targetSidewaysFriction = sidewaysFriction;
+
+
+        if (brake && isOnGround)
+        {
+            if (!braking && (Mathf.Abs(horizontal) > 0.5f || drifting))
+            {
+                if (drifting == false)
+                    turnBias = horizontal * turnBiasFactor + Mathf.Sign(horizontal) * turnBiasBias;
+                drifting = true;
+                targetSidewaysFriction = 0;
+                
+            }
+            else
+            {
+                targetForwardsFriction = 3;
+                braking = true;
+            }
+        } else
+        {
+            drifting = false;
+            braking = false;
+            turnBias = 0;
+        }
+
+
+        currentForwardsFriction = Mathf.Lerp(currentForwardsFriction, targetForwardsFriction, 0.07f);
+        currentSidewaysFriction = Mathf.Lerp(currentSidewaysFriction, targetSidewaysFriction, 0.07f);
+
+
         Vector3 frictionVelocity = Vector3.zero;
 
-        if (forwardsVelocity.magnitude > forwardsFriction)
+        if (forwardsVelocity.magnitude > currentForwardsFriction)
         {
-            frictionVelocity += -forwardsVelocity.normalized * forwardsFriction;
+            frictionVelocity += -forwardsVelocity.normalized * currentForwardsFriction;
         }
         else
         {
             frictionVelocity = -forwardsVelocity;
         }
 
-        if (sidewaysVelocity.magnitude > sidewaysFriction)
+        if (sidewaysVelocity.magnitude > currentSidewaysFriction)
         {
-            frictionVelocity += -sidewaysVelocity.normalized * sidewaysFriction;
+            frictionVelocity += -sidewaysVelocity.normalized * currentSidewaysFriction;
         }
         else
         {
@@ -108,14 +170,7 @@ public class Car : MonoBehaviour
 
         // velocity *= 1f / (1 + speed * airResistance / 80000);
 
-        Vector3 forces = Vector3.zero;
-
-        if (brake && isOnGround)
-        {
-            vertical = 0;
-            forces *= 0.9f;
-        }
-
+       
         if (isOnGround)
         {
             // accelerator
@@ -140,7 +195,7 @@ public class Car : MonoBehaviour
         if (Vector3.Dot(rb.velocity, transform.forward) < 0)
             horizontal *= -1;
 
-        transform.eulerAngles += new Vector3(0, horizontal * (speed < maxTurningSpeed ? speed : 0) * angularVelocity * Time.fixedDeltaTime, 0);
+        transform.eulerAngles += new Vector3(0, (horizontal + turnBias) * (speed < maxTurningSpeed ? speed : 0) * angularVelocity * Time.fixedDeltaTime, 0);
 
         // velocity += -transform.up * 9.8f;
 
@@ -207,22 +262,87 @@ public class Car : MonoBehaviour
         normal = normal.normalized;
 
 
-        Debug.DrawLine(transform.position, transform.position + normal * 10);
+        Quaternion stuntQuat = Quaternion.identity;
+
+        if (!isOnGround)
+        {
+            normal = Vector3.Cross(rb.velocity, transform.right).normalized;
+            angleStep = Time.fixedDeltaTime * 20;
+
+        }
+
+        stuntState = StuntState.None;
 
         if (!raycastCollided)
         {
             // stunts
-            angleStep = Time.fixedDeltaTime * 20;
+
+            if (!IsOnGround) // ideally this will always be false when in here
+            {
+                
+                Debug.DrawLine(transform.position, transform.position + transform.up * 5, Color.blue);
+                Debug.DrawLine(transform.position, transform.position + stuntTarget * 5, Color.red);
+
+                switch (stuntState)
+                {
+                    case StuntState.None:
+                        if (Input.GetKey(KeyCode.C))
+                        {
+                            //stuntQuat = Quaternion.FromToRotation(transform.up, transform.up - transform.forward);
+                            stuntTarget = transform.up - transform.forward * 15;
+                            stuntState = StuntState.Wheelie;
+                            angleStep = Time.fixedDeltaTime * 200;
+                        }
+                        else if (Input.GetKey(KeyCode.X))
+                        {
+                            //stuntQuat = Quaternion.FromToRotation(transform.up, transform.up - transform.forward);
+                            stuntState = StuntState.Backflip;
+                            stuntTarget = Vector3.up;
+                            angleStep = Time.fixedDeltaTime * 150;
+                        }
+                        else if (Input.GetKey(KeyCode.Z))
+                        {
+                            angleStep = Time.fixedDeltaTime * 200;
+                            stuntState = StuntState.BarrelRoll;
+                            stuntTarget = Vector3.up;
+                        }
+                        else
+                        {
+                            angleStep = Time.fixedDeltaTime * 20;
+                        }
+                        break;
+
+                    case StuntState.Wheelie:
+                        //stuntQuat = Quaternion.FromToRotation(transform.up, transform.up - transform.forward);
+                        angleStep = Time.fixedDeltaTime * 300;
+                        break;
+
+                    case StuntState.Backflip:
+                        transform.eulerAngles -= new Vector3(5f, 0, 0);
+                        break;
+
+                    case StuntState.BarrelRoll:
+                        float rollAngle = 180; // or any other value you prefer
+                        normal = Quaternion.AngleAxis(rollAngle, transform.forward) * normal;
+                        angleStep = Time.fixedDeltaTime * 300;
+                        break;
+                }
+
+
+            }
         }
 
+        Debug.DrawLine(transform.position, transform.position + transform.up - transform.forward, Color.red);
+        Debug.DrawLine(transform.position, transform.position + transform.up - transform.right, Color.yellow);
 
-        Quaternion quat = Quaternion.FromToRotation(transform.up, normal);
 
+        Quaternion quat = Quaternion.identity;
+        if (stuntState == StuntState.None)
+            quat = Quaternion.FromToRotation(transform.up, normal);
 
 
         xTarget = quat.eulerAngles.x;
         zTarget = quat.eulerAngles.z;
-
 
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, transform.rotation * quat, angleStep);
