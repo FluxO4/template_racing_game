@@ -14,6 +14,13 @@ public class FollowerCamera : MonoBehaviour
 
     Vector3 rotation = new Vector3();
 
+    LayerMask mask;
+
+    private void Start()
+    {
+        mask = LayerMask.GetMask("Track"); // maybe do bitshifting magic to handle everything separately?
+    }
+
     void FixedUpdate()
     {
         Vector3 targetMotionDir = target.InverseTransformDirection(target.GetComponent<Rigidbody>().velocity);
@@ -23,8 +30,15 @@ public class FollowerCamera : MonoBehaviour
         transform.position = target.position - Quaternion.Euler(0, cameraAngle, 0) * Vector3.forward * followDistance;
 
         float cameraHeight = Mathf.Lerp(transform.position.y, target.position.y + followHeight, heightLerpRate * Time.fixedDeltaTime);
-        transform.position = new Vector3(transform.position.x, cameraHeight, transform.position.z);
+        Vector3 idealPosition = new Vector3(transform.position.x, cameraHeight, transform.position.z);
+        Vector3 raycastStartPosition = new Vector3(target.position.x, target.position.y, target.position.z);
 
+        if (Physics.Linecast(raycastStartPosition, idealPosition, out RaycastHit hit, mask.value))
+        {
+            idealPosition = hit.point;
+        }
+
+        transform.position = idealPosition;
         transform.LookAt(target);
     }
 }
