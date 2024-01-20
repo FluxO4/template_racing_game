@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Net.Http.Headers;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Car : MonoBehaviour
@@ -17,9 +13,21 @@ public class Car : MonoBehaviour
     public float correctionFactor = 0.5f;
     public float maxTurningSpeed = 200;
 
+    [Space(10)]
+    // nitro stuff
+    public int nitroCharges = 3;
+    public int currentNitroCharges;     // public for debugging
+    public float nitroCoolDown;
+    public float currentNitroCoolDown;  // public for debugging
+    public float nitroDuration;
+    public float currentNitroDuration;  // public for debugging
+    public float nitroFactor;
+
+    public bool stunting;   // public for debugging
+
     public float breakForce = 0.05f;
 
-    public bool isOnGround = false;
+    public bool isOnGround = false; // public for debugging
 
     public bool IsOnGround
     {
@@ -29,6 +37,7 @@ public class Car : MonoBehaviour
 
     }
 
+    [Space(10)]
 
     [SerializeField]
     float speed;
@@ -40,33 +49,28 @@ public class Car : MonoBehaviour
 
     Rigidbody rb;
 
-    public Transform[] wheels = new Transform[4];
+    [Space(10)]
+
+    public Transform[] wheelRaycasts = new Transform[4];
     Vector3[] wheelBuffer = new Vector3[4];
 
-    public enum StuntState
-    {
-        None,
-        Wheelie,
-        Backflip,
-        // front flip?
-        BarrelRoll,
-    }
+    public Transform[] wheelMeshes = new Transform[4];
 
-    public StuntState stuntState = StuntState.None;
-    public StuntState prevState = StuntState.None;
+
+    public GameObject carVisual;
 
     [SerializeField]
     bool drifting;
 
     bool braking = false;
 
-    Vector3 stuntTarget;
-
     public float turnBiasBias = 0.2f;
     public float turnBiasFactor = 1f;
     float turnBias = 0;
 
 
+
+    public float wheelRadius = 0.5f;
 
     float currentSidewaysFriction;
     float currentForwardsFriction;
@@ -79,29 +83,41 @@ public class Car : MonoBehaviour
 
         for (int i = 0; i < wheelBuffer.Length; ++i)
         {
-            wheelBuffer[i] = wheels[i].position;
+            wheelBuffer[i] = wheelRaycasts[i].position;
         }
+
+        currentNitroCharges = nitroCharges;
+
     }
 
+    private void Update()
+    {
+
+        if (Input.GetKeyDown(KeyCode.N)) // debug nitro gaining
+        {
+            currentNitroCharges++;
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (currentNitroCoolDown == 0)
+            {
+                if (currentNitroCharges > 0)
+                {
+                    currentNitroDuration = nitroDuration;
+                    currentNitroCoolDown = nitroCoolDown;
+                    currentNitroCharges--;
+                }
+            }
+        }
+
+    }
 
     public void FixedUpdate()
     {
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
         bool brake = Input.GetKey(KeyCode.Space);
-
-        // rb.velocity += transform.forward * velocity * vertical * Time.fixedDeltaTime;
-        // rb.velocity = Vector3.RotateTowards(rb.velocity, transform.forward, Vector3.SignedAngle(rb.velocity, transform.forward, transform.up), Time.fixedDeltaTime);
-        // transform.rotation *= Quaternion.FromToRotation(transform.forward, (transform.forward + (transform.right * horizontal) * Time.fixedDeltaTime).normalized);
-
-        //velocity += vertical * transform.forward * acceleration * Time.fixedDeltaTime;
-
-
-        //// friction code starts
-        // speed = rb.velocity.magnitude;
-
-        //float scaleFactorForward = Mathf.Max(0, (speed - forwardsFriction) / speed);
-        //float scaleFactorSideways = Mathf.Max(0, (speed - sidewaysFriction) / speed);
 
         Vector3 forwardsVelocity = Vector3.Project(rb.velocity, transform.forward);
         Vector3 sidewaysVelocity = Vector3.Project(rb.velocity, transform.right);
@@ -110,6 +126,22 @@ public class Car : MonoBehaviour
 
         float targetForwardsFriction = forwardsFriction;
         float targetSidewaysFriction = sidewaysFriction;
+
+        float currentAcceleration = acceleration;
+
+
+
+
+        if (currentNitroDuration > 0)
+        {
+            currentNitroDuration = Mathf.Max(0, currentNitroDuration - Time.fixedDeltaTime);
+            currentAcceleration *= nitroFactor;
+        }
+
+        if (currentNitroCoolDown > 0)
+        {
+            currentNitroCoolDown = Mathf.Max(0, currentNitroCoolDown - Time.fixedDeltaTime);
+        }
 
 
         if (brake && isOnGround)
@@ -120,14 +152,15 @@ public class Car : MonoBehaviour
                     turnBias = horizontal * turnBiasFactor + Mathf.Sign(horizontal) * turnBiasBias;
                 drifting = true;
                 targetSidewaysFriction = 0;
-                
+
             }
             else
             {
                 targetForwardsFriction = 3;
                 braking = true;
             }
-        } else
+        }
+        else
         {
             drifting = false;
             braking = false;
@@ -159,22 +192,10 @@ public class Car : MonoBehaviour
             frictionVelocity += -sidewaysVelocity;
         }
 
-        //forwardsVelocity *= scaleFactorForward;
-        //sidewaysVelocity *= scaleFactorSideways;
-
-        //velocity = forwardsVelocity + sidewaysVelocity;
-
-        // friction code ends
-
-        // air resistance
-
-        // velocity *= 1f / (1 + speed * airResistance / 80000);
-
-       
         if (isOnGround)
         {
             // accelerator
-            forces += transform.forward * acceleration * vertical;
+            forces += transform.forward * currentAcceleration * vertical;
             // friction
             forces += frictionVelocity / Time.fixedDeltaTime;
         }
@@ -186,10 +207,6 @@ public class Car : MonoBehaviour
 
         speed = Vector3.ProjectOnPlane(rb.velocity, transform.up).magnitude;
 
-        // Vector3 newPosition = rb.position + velocity * Time.fixedDeltaTime;
-
-        // transform.eulerAngles += new Vector3(Vector3.SignedAngle(transform.up, Vector3.up, transform.forward) * correctionFactor, 0, 0);
-
         // turning
 
         if (Vector3.Dot(rb.velocity, transform.forward) < 0)
@@ -197,28 +214,16 @@ public class Car : MonoBehaviour
 
         transform.eulerAngles += new Vector3(0, (horizontal + turnBias) * (speed < maxTurningSpeed ? speed : 0) * angularVelocity * Time.fixedDeltaTime, 0);
 
-        // velocity += -transform.up * 9.8f;
-
-        // rb.AddForce((velocity - rb.velocity) * Time.fixedDeltaTime);
-        //rb.MovePosition(newPosition);
-
         // TODO: account for speed
         float angleStep = Time.fixedDeltaTime * 100;
 
-
-
-
-        RaycastHit hit;
-
         bool raycastCollided = false;
 
-
-
-        const float maxHitDistance = 2;
-        for (int i = 0; i < wheels.Length; ++i)
+        const float maxHitDistance = 1.5f;
+        for (int i = 0; i < wheelRaycasts.Length; ++i)
         {
-            Transform wheel = wheels[i];
-            if (Physics.Raycast(wheel.position, -transform.up, out hit, maxHitDistance, LayerMask.GetMask("Track")))
+            Transform wheel = wheelRaycasts[i];
+            if (Physics.Raycast(wheel.position, -transform.up, out RaycastHit hit, maxHitDistance, LayerMask.GetMask("Track")))
             {
                 //normal += hit.normal;
 
@@ -232,13 +237,8 @@ public class Car : MonoBehaviour
             else
             {
                 // wheelBuffer[i] = (wheel.position - transform.up * maxHitDistance);
-                // averagePosition += (wheel.position - transform.position) * 2;
-                // divisor += 2;
-                // normal += Vector3.up * 2;
             }
         }
-
-        // normal = (normal + averagePosition).normalized;
 
         Vector3 normal = Vector3.zero;
 
@@ -247,9 +247,9 @@ public class Car : MonoBehaviour
             int next = (i + 1) % wheelBuffer.Length;
             int prev = (wheelBuffer.Length + (i - 1)) % wheelBuffer.Length;
 
-            Vector3 a = wheelBuffer[i] + wheels[i].position;
-            Vector3 b = wheelBuffer[next] + wheels[next].position;
-            Vector3 c = wheelBuffer[prev] + wheels[prev].position;
+            Vector3 a = wheelBuffer[i] + wheelRaycasts[i].position;
+            Vector3 b = wheelBuffer[next] + wheelRaycasts[next].position;
+            Vector3 c = wheelBuffer[prev] + wheelRaycasts[prev].position;
             Vector3 ab = b - a;
             Vector3 ac = c - a;
 
@@ -257,12 +257,17 @@ public class Car : MonoBehaviour
             Debug.DrawLine(a, c);
 
             normal += Vector3.Cross(ab, ac);
+
+            // NOTE: This is supposed to be the vertical motion of the wheels
+
+            //wheelMeshes[i].transform.position = new Vector3(wheelRaycasts[i].transform.position.x, 
+            //                                                wheelRaycasts[i].transform.position.y + wheelBuffer[i].y + wheelRadius,
+            //                                                wheelRaycasts[i].transform.position.z);
         }
 
         normal = normal.normalized;
 
 
-        Quaternion stuntQuat = Quaternion.identity;
 
         if (!isOnGround)
         {
@@ -271,74 +276,48 @@ public class Car : MonoBehaviour
 
         }
 
-        stuntState = StuntState.None;
+        stunting = false;
 
         if (!raycastCollided)
         {
             // stunts
-
             if (!IsOnGround) // ideally this will always be false when in here
             {
-                
-                Debug.DrawLine(transform.position, transform.position + transform.up * 5, Color.blue);
-                Debug.DrawLine(transform.position, transform.position + stuntTarget * 5, Color.red);
-
-                switch (stuntState)
+                if (Input.GetKey(KeyCode.X)) // rotate about X axis (Backflip)
                 {
-                    case StuntState.None:
-                        if (Input.GetKey(KeyCode.C))
-                        {
-                            //stuntQuat = Quaternion.FromToRotation(transform.up, transform.up - transform.forward);
-                            stuntTarget = transform.up - transform.forward * 15;
-                            stuntState = StuntState.Wheelie;
-                            angleStep = Time.fixedDeltaTime * 200;
-                        }
-                        else if (Input.GetKey(KeyCode.X))
-                        {
-                            //stuntQuat = Quaternion.FromToRotation(transform.up, transform.up - transform.forward);
-                            stuntState = StuntState.Backflip;
-                            stuntTarget = Vector3.up;
-                            angleStep = Time.fixedDeltaTime * 150;
-                        }
-                        else if (Input.GetKey(KeyCode.Z))
-                        {
-                            angleStep = Time.fixedDeltaTime * 200;
-                            stuntState = StuntState.BarrelRoll;
-                            stuntTarget = Vector3.up;
-                        }
-                        else
-                        {
-                            angleStep = Time.fixedDeltaTime * 20;
-                        }
-                        break;
+                    // Quaternion stuntQuat = Quaternion.FromToRotation(carVisual.transform.up, carVisual.transform.up - carVisual.transform.forward);
+                    // carVisual.transform.rotation = Quaternion.RotateTowards(carVisual.transform.rotation, transform.rotation * stuntQuat, 5);
+                    //Vector3 eulerRot = carVisual.transform.localEulerAngles;
+                    // eulerRot.x -= 3;
+                    // carVisual.transform.localEulerAngles = eulerRot;
 
-                    case StuntState.Wheelie:
-                        //stuntQuat = Quaternion.FromToRotation(transform.up, transform.up - transform.forward);
-                        angleStep = Time.fixedDeltaTime * 300;
-                        break;
+                    carVisual.transform.localRotation = carVisual.transform.localRotation * Quaternion.AngleAxis(-3, Vector3.right);
 
-                    case StuntState.Backflip:
-                        transform.eulerAngles -= new Vector3(5f, 0, 0);
-                        break;
-
-                    case StuntState.BarrelRoll:
-                        float rollAngle = 180; // or any other value you prefer
-                        normal = Quaternion.AngleAxis(rollAngle, transform.forward) * normal;
-                        angleStep = Time.fixedDeltaTime * 300;
-                        break;
+                    angleStep = Time.fixedDeltaTime * 150;
+                    stunting = true;
                 }
-
+                else if (Input.GetKey(KeyCode.Z)) // rotate about Z axis (Barrel Roll)
+                {
+                    carVisual.transform.localRotation = carVisual.transform.localRotation * Quaternion.AngleAxis(3, Vector3.forward);
+                    angleStep = Time.fixedDeltaTime * 200;
+                    stunting = true;
+                }
+                else
+                {
+                    angleStep = Time.fixedDeltaTime * 20;
+                    stunting = false;
+                }
 
             }
         }
 
-        Debug.DrawLine(transform.position, transform.position + transform.up - transform.forward, Color.red);
-        Debug.DrawLine(transform.position, transform.position + transform.up - transform.right, Color.yellow);
-
+        Debug.DrawLine(carVisual.transform.position, carVisual.transform.position + carVisual.transform.up * 3, Color.red);
+        Debug.DrawLine(carVisual.transform.position, carVisual.transform.position + (carVisual.transform.up - carVisual.transform.forward).normalized * 3, Color.red);
 
         Quaternion quat = Quaternion.identity;
-        if (stuntState == StuntState.None)
+        if (!stunting)
             quat = Quaternion.FromToRotation(transform.up, normal);
+
 
 
         xTarget = quat.eulerAngles.x;
@@ -346,11 +325,10 @@ public class Car : MonoBehaviour
 
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, transform.rotation * quat, angleStep);
-        // transform.eulerAngles = new Vector3(Mathf.LerpAngle(transform.eulerAngles.x, xTarget, 1f), transform.eulerAngles.y, Mathf.LerpAngle(transform.eulerAngles.z, zTarget, 1f));
 
-
-        // rb.AddTorque(transform.up * angularVelocity * horizontal);
-        // transform.rotation *= Quaternion.FromToRotation(transform.forward, rb.velocity.normalized);
-        // transform.rotation *= Quaternion.FromToRotation(transform.up, Vector3.up);
+        if (IsOnGround)
+        {
+            carVisual.transform.rotation = transform.rotation;
+        }
     }
 }
