@@ -119,6 +119,14 @@ public class Car : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         bool brake = Input.GetKey(KeyCode.Space);
 
+        // the car visual is not exactly upright, so possible misalignment during stunts.
+        // TODO: decide the threshold.
+        if (Vector3.Dot(transform.up, carVisual.transform.up) < 0.99f)
+        {
+            // so fix the rotations and we disable all controls for a few seconds.
+        }
+
+
         Vector3 forwardsVelocity = Vector3.Project(rb.velocity, transform.forward);
         Vector3 sidewaysVelocity = Vector3.Project(rb.velocity, transform.right);
 
