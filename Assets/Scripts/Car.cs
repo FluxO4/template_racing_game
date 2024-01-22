@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Car : MonoBehaviour
 {
@@ -77,6 +78,10 @@ public class Car : MonoBehaviour
 
     private void Start()
     {
+        if (!RaceController.i)
+        {
+            playerCar = true;
+        }
         rb = GetComponent<Rigidbody>();
         currentSidewaysFriction = sidewaysFriction;
         currentForwardsFriction = forwardsFriction;
@@ -113,11 +118,31 @@ public class Car : MonoBehaviour
 
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (RaceController.i)
+        {
+            if(other.tag == "Start Region")
+            {
+                RaceController.i.CrossedLine(this);
+            }
+        }
+    }
+
+    [HideInInspector]
+    public bool playerCar = false;
+
     public void FixedUpdate()
     {
-        float vertical = Input.GetAxis("Vertical");
-        float horizontal = Input.GetAxis("Horizontal");
-        bool brake = Input.GetKey(KeyCode.Space);
+        float vertical = 0;
+        float horizontal = 0;
+        bool brake = false;
+
+        if (playerCar) {
+            vertical = Input.GetAxis("Vertical");
+            horizontal = Input.GetAxis("Horizontal");
+            brake = Input.GetKey(KeyCode.Space);
+        }
 
         // the car visual is not exactly upright, so possible misalignment during stunts.
         // TODO: decide the threshold.
@@ -160,6 +185,7 @@ public class Car : MonoBehaviour
                     turnBias = horizontal * turnBiasFactor + Mathf.Sign(horizontal) * turnBiasBias;
                 drifting = true;
                 targetSidewaysFriction = 0;
+                targetForwardsFriction = 0;
 
             }
             else
@@ -176,8 +202,8 @@ public class Car : MonoBehaviour
         }
 
 
-        currentForwardsFriction = Mathf.Lerp(currentForwardsFriction, targetForwardsFriction, 0.07f);
-        currentSidewaysFriction = Mathf.Lerp(currentSidewaysFriction, targetSidewaysFriction, 0.07f);
+        currentForwardsFriction = Mathf.Lerp(currentForwardsFriction, targetForwardsFriction, 0.5f);
+        currentSidewaysFriction = Mathf.Lerp(currentSidewaysFriction, targetSidewaysFriction, 0.5f);
 
 
         Vector3 frictionVelocity = Vector3.zero;
@@ -337,6 +363,14 @@ public class Car : MonoBehaviour
         if (IsOnGround)
         {
             carVisual.transform.rotation = transform.rotation;
+        }
+
+        if (RaceController.i)
+        {
+            if(transform.position.y < -10)
+            {
+                RaceController.i.Respawn(this);
+            }
         }
     }
 }

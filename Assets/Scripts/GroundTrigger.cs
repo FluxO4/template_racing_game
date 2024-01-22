@@ -8,7 +8,7 @@ public class GroundTrigger : MonoBehaviour
 
     Car parentCar;
 
-    void Start()
+    void Awake()
     {
         parentCar = transform.parent.GetComponent<Car>();
     }

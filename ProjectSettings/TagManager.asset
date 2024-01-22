@@ -7,6 +7,9 @@ TagManager:
   - Track
   - Ground
   - Car
+  - Player Car
+  - Start Spot
+  - Start Region
   layers:
   - Default
   - TransparentFX
