@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class CarAI : MonoBehaviour
     private int currentTargetIndex = 0; // Index of the current target
 
     public float speed = 5f; // Speed of the car
+    public float acceleration = 1f;
     public float turnSpeed = 100f; // Turning speed of the car
     public float detectionDistance = 10f; // Detection distance for obstacles
     public LayerMask obstacleLayers; // Layers considered as obstacles
@@ -37,6 +39,7 @@ public class CarAI : MonoBehaviour
         if (targets.Count == 0) return;
 
         Vector3 directionToTarget = GetDirectionToTarget();
+
         Vector3 avoidanceDirection = Vector3.zero;
 
         if (IsObstacleDetected())
@@ -50,8 +53,9 @@ public class CarAI : MonoBehaviour
         }
 
         Vector3 finalDirection = isAvoidingObstacle ? avoidanceDirection : directionToTarget;
-        MoveCar(finalDirection);
-
+        Debug.Log(finalDirection);
+        /*MoveCar(finalDirection);*/
+        MoveCarSmoothly(finalDirection);
         CheckIfTargetReached();
     }
 
@@ -93,16 +97,18 @@ public class CarAI : MonoBehaviour
 
         if (!isLeftBlocked)
         {
-            return -transform.right; // Go left
+            // Rotate the direction slightly to the left by 30 degrees
+            return Quaternion.Euler(0, -30, 0) * directionToTarget;
         }
         else if (!isRightBlocked)
         {
-            return transform.right; // Go right
+            // Rotate the direction slightly to the right by 30 degrees
+            return Quaternion.Euler(0, 30, 0) * directionToTarget;
         }
         else
         {
             // If both sides are blocked, use the original direction but slightly altered to try and find a way around
-            return Quaternion.Euler(0, 45, 0) * directionToTarget;
+            return Quaternion.Euler(0, 30, 0) * directionToTarget; // Adjusted to 30 degrees
         }
     }
 
@@ -115,6 +121,17 @@ public class CarAI : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime));
         }
+    }
+
+    void MoveCarSmoothly(Vector3 direction)
+    {
+        // Smoothly interpolate the rotation
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        Debug.Log(targetRotation);
+        rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
+
+        // Smoothly accelerate the car
+        rb.MovePosition(rb.position + direction * speed * Time.fixedDeltaTime);
     }
 
     bool IsOnMeshCollider()
