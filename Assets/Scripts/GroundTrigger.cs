@@ -6,11 +6,11 @@ public class GroundTrigger : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    Car parentCar;
+    CarController parentCar;
 
     void Awake()
     {
-        parentCar = transform.parent.GetComponent<Car>();
+        parentCar = transform.parent.GetComponent<CarController>();
     }
 
     private void OnTriggerEnter(Collider other)
