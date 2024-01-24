@@ -76,6 +76,15 @@ public class Car : MonoBehaviour
     float currentSidewaysFriction;
     float currentForwardsFriction;
 
+
+    public float steeringA = 2.5f;
+    public float steeringB = 0.05f;
+    public float steeringC = 0.2f;
+
+    public Vector3 currentNormal = Vector3.up;
+
+    float SteeringValue(float x) => steeringA * (steeringC * x) / (1 + steeringB * (steeringC * x) * (steeringC * x));
+
     private void Start()
     {
         if (!RaceController.i)
@@ -122,7 +131,7 @@ public class Car : MonoBehaviour
     {
         if (RaceController.i)
         {
-            if(other.tag == "Start Region")
+            if (other.tag == "Start Region")
             {
                 RaceController.i.CrossedLine(this);
             }
@@ -138,7 +147,8 @@ public class Car : MonoBehaviour
         float horizontal = 0;
         bool brake = false;
 
-        if (playerCar) {
+        if (playerCar)
+        {
             vertical = Input.GetAxis("Vertical");
             horizontal = Input.GetAxis("Horizontal");
             brake = Input.GetKey(KeyCode.Space);
@@ -246,7 +256,7 @@ public class Car : MonoBehaviour
         if (Vector3.Dot(rb.velocity, transform.forward) < 0)
             horizontal *= -1;
 
-        transform.eulerAngles += new Vector3(0, (horizontal + turnBias) * (speed < maxTurningSpeed ? speed : 0) * angularVelocity * Time.fixedDeltaTime, 0);
+        transform.eulerAngles += new Vector3(0, (horizontal + turnBias) * SteeringValue(speed) * angularVelocity * Time.fixedDeltaTime, 0);
 
         // TODO: account for speed
         float angleStep = Time.fixedDeltaTime * 100;
@@ -305,10 +315,15 @@ public class Car : MonoBehaviour
 
         if (!isOnGround)
         {
-            normal = Vector3.Cross(rb.velocity, transform.right).normalized;
+            //normal = Vector3.Cross(rb.velocity, transform.right).normalized;
+            normal = Vector3.up;
             angleStep = Time.fixedDeltaTime * 20;
-
         }
+
+        currentNormal = Vector3.MoveTowards(normal, currentNormal, 0.1f);
+
+        Debug.DrawLine(transform.position, transform.position + normal * 3, Color.red);
+
 
         stunting = false;
 
@@ -345,12 +360,12 @@ public class Car : MonoBehaviour
             }
         }
 
-        Debug.DrawLine(carVisual.transform.position, carVisual.transform.position + carVisual.transform.up * 3, Color.red);
-        Debug.DrawLine(carVisual.transform.position, carVisual.transform.position + (carVisual.transform.up - carVisual.transform.forward).normalized * 3, Color.red);
+        // Debug.DrawLine(carVisual.transform.position, carVisual.transform.position + carVisual.transform.up * 3, Color.red);
+        // Debug.DrawLine(carVisual.transform.position, carVisual.transform.position + (carVisual.transform.up - carVisual.transform.forward).normalized * 3, Color.red);
 
         Quaternion quat = Quaternion.identity;
         if (!stunting)
-            quat = Quaternion.FromToRotation(transform.up, normal);
+            quat = Quaternion.FromToRotation(transform.up, currentNormal);
 
 
 
@@ -358,7 +373,11 @@ public class Car : MonoBehaviour
         zTarget = quat.eulerAngles.z;
 
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, transform.rotation * quat, angleStep);
+        // transform.rotation = transform.rotation * quat;
+
+        // transform.eulerAngles = new Vector3(Mathf.LerpAngle(transform.eulerAngles.x, xTarget, 1f), transform.eulerAngles.y, Mathf.LerpAngle(transform.eulerAngles.z, zTarget, 1f));
+
+        // transform.rotation = Quaternion.RotateTowards(transform.rotation, transform.rotation * quat, angleStep);
 
         if (IsOnGround)
         {
@@ -367,7 +386,7 @@ public class Car : MonoBehaviour
 
         if (RaceController.i)
         {
-            if(transform.position.y < -10)
+            if (transform.position.y < -10)
             {
                 RaceController.i.Respawn(this);
             }
