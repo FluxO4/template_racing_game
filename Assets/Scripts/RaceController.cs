@@ -12,12 +12,14 @@ public class RaceController : MonoBehaviour
     public List<GameObject> playerCarPrefabs = new List<GameObject>();
     public GameObject aiCarPrefab;
     public GameObject playerCameraPrefab;
+    public GameObject carTokenPrefab;
 
-    public Car playerCar;
+    public CarController playerCar;
     public FollowerCamera playerCamera;
 
 
-    public List<Car> CarsInRace;
+    public List<CarController> CarsInRace = new List<CarController>();
+    public List<Transform> TokensInRace = new List<Transform>();
 
     
 
@@ -35,11 +37,11 @@ public class RaceController : MonoBehaviour
    
         if (!tempPlayerCar)
         {
-            playerCar = Instantiate(playerCarPrefabs[selectedCar]).GetComponent<Car>();
+            playerCar = Instantiate(playerCarPrefabs[selectedCar]).GetComponent<CarController>();
         }
         else
         {
-            playerCar = tempPlayerCar.GetComponent<Car>();
+            playerCar = tempPlayerCar.GetComponent<CarController>();
         }
 
         playerCamera = Camera.main.GetComponent<FollowerCamera>();
@@ -69,7 +71,7 @@ public class RaceController : MonoBehaviour
                 {
                     if(i != playerStartSpot)
                     {
-                        Car t = Instantiate(aiCarPrefab).GetComponent<Car>();
+                        CarController t = Instantiate(aiCarPrefab).GetComponent<CarController>();
                         t.transform.position = Track.i.startSpots[i].transform.position;
                         t.transform.rotation = Track.i.startSpots[i].transform.rotation;
                         playerCamera.transform.position = playerCar.transform.position - playerCar.transform.forward * 5f + playerCar.transform.up * 2f;
@@ -81,6 +83,16 @@ public class RaceController : MonoBehaviour
                         playerCar.transform.rotation = Track.i.startSpots[i].transform.rotation;
                         CarsInRace.Add(playerCar);
                     }
+                }
+
+                for(int i = 0; i < CarsInRace.Count; i++)
+                {
+                    Transform t = Instantiate(carTokenPrefab).transform;
+                    Vector3 newPos = CarsInRace[i].transform.position;
+                    newPos.y = -40;
+                    t.transform.position = newPos;
+                    TokensInRace.Add(t);
+
                 }
             }
         }
@@ -99,7 +111,12 @@ public class RaceController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        for(int i = 0; i < CarsInRace.Count; i++)
+        {
+            Vector3 newPos = CarsInRace[i].transform.position;
+            newPos.y = -40;
+            TokensInRace[i].transform.position = newPos;
+        }
     }
 
     

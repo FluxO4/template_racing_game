@@ -50,6 +50,9 @@ public class CarController : MonoBehaviour
     WheelControl[] wheels;
     Rigidbody rb;
 
+    [HideInInspector]
+    public bool playerCar = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -70,6 +73,13 @@ public class CarController : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
         float horizontalInput = Input.GetAxis("Horizontal");
 
+        if (!playerCar)
+        {
+            verticalInput = 0;
+            horizontalInput = 0;
+           // brake = Input.GetKey(KeyCode.Space);
+        }
+
 
         //Applying Maximum Speed
         if (SpeedInKPH < maxSpeed)
@@ -82,7 +92,7 @@ public class CarController : MonoBehaviour
             }
         }
 
-        Debug.Log(wheels[0].WheelCollider.rpm);
+        //Debug.Log(wheels[0].WheelCollider.rpm);
 
         if (SpeedInKPH > maxSpeed)
         {
@@ -104,20 +114,22 @@ public class CarController : MonoBehaviour
                 wheel.WheelCollider.steerAngle = currentSteerRange;
         }
 
-
-
-        if (Input.GetKeyDown(KeyCode.C) && timeTillNitroCanBeUsed < Time.time)
+        if (playerCar)
         {
-            rb.AddForce(nitroFactor * transform.forward, ForceMode.VelocityChange);
-            timeTillNitroCanBeUsed = Time.time + nitroCooldown;
-        }
 
-        if (Input.GetKey(KeyCode.Space))
-        {
-            foreach (WheelControl wheel in wheels)
+            if (Input.GetKeyDown(KeyCode.C) && timeTillNitroCanBeUsed < Time.time)
             {
-                wheel.WheelCollider.brakeTorque = brakeForce;
-                // wheel.WheelCollider.motorTorque = 0;
+                rb.AddForce(nitroFactor * transform.forward, ForceMode.VelocityChange);
+                timeTillNitroCanBeUsed = Time.time + nitroCooldown;
+            }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                foreach (WheelControl wheel in wheels)
+                {
+                    wheel.WheelCollider.brakeTorque = brakeForce;
+                    // wheel.WheelCollider.motorTorque = 0;
+                }
             }
         }
 
@@ -125,7 +137,7 @@ public class CarController : MonoBehaviour
         Vector3 forces = -rb.velocity.sqrMagnitude * (rb.velocity.normalized) * airResistance;
         // Vector3 forces = -forwardSpeed * forwardSpeed * (rb.velocity.normalized) * airResistance;
 
-        if (!IsOnGround) // ideally this will always be false when in here
+        if (playerCar && !IsOnGround) // ideally this will always be false when in here
         {
             if (Input.GetKey(KeyCode.X)) // rotate about X axis (Backflip)
             {
