@@ -16,17 +16,15 @@ public class WheelControl : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        basicRotation = wheelModel.rotation;
-        wheelModel.transform.rotation = basicRotation;
         WheelCollider = GetComponent<WheelCollider>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        WheelCollider.GetWorldPose(out Vector3 position, out Quaternion rotation);
+        WheelCollider.GetWorldPose(out Vector3 position, out basicRotation);
         wheelModel.transform.position = position;
-        wheelModel.transform.rotation = rotation * basicRotation;
+        wheelModel.transform.rotation =  basicRotation;
 
         // wheelModel.transform.rotation = Quaternion.RotateTowards(wheelModel.transform.rotation, rotation * basicRotation, 150 * Time.deltaTime);
     }

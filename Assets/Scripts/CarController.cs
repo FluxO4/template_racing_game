@@ -13,7 +13,7 @@ public class CarController : MonoBehaviour
 
     public float maxSpeed = 100;
     public float motorTorque = 2000f;
-    public float brakeForce = 2000f;
+    public float brakeTorque = 2000f;
     public float steeringRange = 35;
     public float steeringRangeAtMaxSpeed = 10;
 
@@ -68,8 +68,85 @@ public class CarController : MonoBehaviour
 
     }
 
-    public void FixedUpdate()
+    public void Update()
     {
+
+        float vInput = Input.GetAxis("Vertical");
+        float hInput = Input.GetAxis("Horizontal");
+
+        Debug.Log("Current vertical and horizontal are v="+vInput +", h="+hInput);
+
+        // Calculate current speed in relation to the forward direction of the car
+        // (this returns a negative number when traveling backwards)
+        float forwardSpeed = Vector3.Dot(transform.forward, rb.velocity);
+
+
+        // Calculate how close the car is to top speed
+        // as a number from zero to one
+        float speedFactor = Mathf.InverseLerp(0, maxSpeed, forwardSpeed);
+
+        // Use that to calculate how much torque is available 
+        // (zero torque at top speed)
+        float currentMotorTorque = Mathf.Lerp(motorTorque, 0, speedFactor);
+
+        // …and to calculate how much to steer 
+        // (the car steers more gently at top speed)
+        float currentSteerRange = Mathf.Lerp(steeringRange, steeringRangeAtMaxSpeed, speedFactor);
+
+        // Check whether the user input is in the same direction 
+        // as the car's velocity
+        bool isAccelerating = Mathf.Sign(vInput) == Mathf.Sign(forwardSpeed);
+
+        foreach (var wheel in wheels)
+        {
+            // Apply steering to Wheel colliders that have "Steerable" enabled
+            if (wheel.steerable)
+            {
+                wheel.WheelCollider.steerAngle = hInput * currentSteerRange;
+            }
+
+            if (isAccelerating)
+            {
+                // Apply torque to Wheel colliders that have "Motorized" enabled
+                if (wheel.motorized)
+                {
+                    wheel.WheelCollider.motorTorque = vInput * motorTorque;
+                }
+                wheel.WheelCollider.brakeTorque = 0;
+            }
+            else
+            {
+                // If the user is trying to go in the opposite direction
+                // apply brakes to all wheels
+                wheel.WheelCollider.brakeTorque = Mathf.Abs(vInput) * brakeTorque;
+                wheel.WheelCollider.motorTorque = 0;
+            }
+        }
+
+        //Also accelerate the body of the car
+        /*if (isAccelerating)
+        {
+            rb.AddForce(transform.forward * vInput * maxSpeed * Time.deltaTime + transform.right * hInput * currentSteerRange * 0.05f * Time.deltaTime, ForceMode.Acceleration);
+        }
+        else
+        {
+        
+        }*/
+
+            currentSpeed = rb.velocity.magnitude;
+        SpeedInKPH = (int)(currentSpeed * 3.6f);
+
+        /*Vector3 forces = -rb.velocity.sqrMagnitude * (rb.velocity.normalized) * airResistance;
+        // Vector3 forces = -forwardSpeed * forwardSpeed * (rb.velocity.normalized) * airResistance;
+
+        rb.AddForce(forces, ForceMode.Acceleration);*/
+
+        if (downForce > 0)
+            rb.AddForce(downForce * rb.velocity.magnitude * -transform.up); 
+
+
+
+        /*
         float verticalInput = Input.GetAxis("Vertical");
         float horizontalInput = Input.GetAxis("Horizontal");
 
@@ -79,6 +156,8 @@ public class CarController : MonoBehaviour
             horizontalInput = 0;
            // brake = Input.GetKey(KeyCode.Space);
         }
+
+        
 
 
         //Applying Maximum Speed
@@ -106,15 +185,18 @@ public class CarController : MonoBehaviour
         currentSpeed = rb.velocity.magnitude;
         SpeedInKPH = (int)(currentSpeed * 3.6f);
 
-        float currentSteerRange = horizontalInput * steeringCurve.Evaluate(currentSpeed);
+        //float currentSteerRange = horizontalInput * steeringCurve.Evaluate(currentSpeed);
 
         foreach (WheelControl wheel in wheels)
         {
             if (wheel.steerable)
-                wheel.WheelCollider.steerAngle = currentSteerRange;
+                wheel.WheelCollider.steerAngle = steeringRange;
+
+
         }
 
-        if (playerCar)
+
+        /*if (playerCar)
         {
 
             if (Input.GetKeyDown(KeyCode.C) && timeTillNitroCanBeUsed < Time.time)
@@ -152,7 +234,7 @@ public class CarController : MonoBehaviour
         rb.AddForce(forces, ForceMode.Acceleration);
 
         if (downForce > 0)
-            rb.AddForce(downForce * rb.velocity.magnitude * -transform.up);
+            rb.AddForce(downForce * rb.velocity.magnitude * -transform.up);*/
     }
 
 
