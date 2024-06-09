@@ -1,0 +1,34 @@
+{
+    "name": "Joystick Control",
+    "maps": [
+        {
+            "name": "Car Control",
+            "id": "2baab14b-df0f-45c6-881d-c334a1425469",
+            "actions": [
+                {
+                    "name": "Steer",
+                    "type": "Value",
+                    "id": "b0cee55c-5c25-48af-938b-bf9545808acf",
+                    "expectedControlType": "Stick",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "90ad1135-7b60-431b-a913-fd6f77c4b964",
+                    "path": "<HID::DragonRise Inc.   Generic   USB  Joystick  >/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

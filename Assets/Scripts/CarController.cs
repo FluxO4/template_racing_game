@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CarController : MonoBehaviour
 {//// old nitro stuff
@@ -68,13 +69,25 @@ public class CarController : MonoBehaviour
 
     }
 
+    float vInput = 0;
+    float hInput = 0;
+
+    private void OnSteer(InputValue value)
+    {
+        Vector2 vectorValue = value.Get<Vector2>();
+        Debug.Log("Detected vector: " + vectorValue);
+        vInput = vectorValue.y;
+        hInput = vectorValue.x;
+    }
+
     public void Update()
     {
+        //Vector2 joystickInput = Gamepad.current.leftStick.ReadValue();
 
-        float vInput = Input.GetAxis("Vertical");
-        float hInput = Input.GetAxis("Horizontal");
+        /*float vInput = Input.GetAxis("Vertical");
+        float hInput = Input.GetAxis("Horizontal");*/
 
-        Debug.Log("Current vertical and horizontal are v="+vInput +", h="+hInput);
+        //Debug.Log("Current vertical and horizontal are v="+vInput +", h="+hInput);
 
         // Calculate current speed in relation to the forward direction of the car
         // (this returns a negative number when traveling backwards)
@@ -89,9 +102,12 @@ public class CarController : MonoBehaviour
         // (zero torque at top speed)
         float currentMotorTorque = Mathf.Lerp(motorTorque, 0, speedFactor);
 
+        currentSpeed = rb.velocity.magnitude;
+
         // …and to calculate how much to steer 
         // (the car steers more gently at top speed)
-        float currentSteerRange = Mathf.Lerp(steeringRange, steeringRangeAtMaxSpeed, speedFactor);
+        //float currentSteerRange = Mathf.Lerp(steeringRange, steeringRangeAtMaxSpeed, speedFactor);
+        float currentSteerRange = Mathf.Abs(steeringCurve.Evaluate(currentSpeed));
 
         // Check whether the user input is in the same direction 
         // as the car's velocity
@@ -133,7 +149,7 @@ public class CarController : MonoBehaviour
         
         }*/
 
-            currentSpeed = rb.velocity.magnitude;
+            
         SpeedInKPH = (int)(currentSpeed * 3.6f);
 
         /*Vector3 forces = -rb.velocity.sqrMagnitude * (rb.velocity.normalized) * airResistance;
