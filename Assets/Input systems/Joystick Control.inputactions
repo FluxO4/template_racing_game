@@ -13,6 +13,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Accelerate",
+                    "type": "PassThrough",
+                    "id": "03c74ba8-5b7c-41c8-bf15-863d7aa98c60",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Back",
+                    "type": "PassThrough",
+                    "id": "32c72c8a-0db5-42d5-86da-9a8f87493f05",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -24,6 +42,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Steer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "013dd096-4a02-4f35-8c3f-097f6fa174c9",
+                    "path": "<HID::DragonRise Inc.   Generic   USB  Joystick  >/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Accelerate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3fe86015-bc74-44d0-a03a-f9fb728fcc72",
+                    "path": "<HID::DragonRise Inc.   Generic   USB  Joystick  >/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -6,7 +6,7 @@ public class GroundTrigger : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    CarController parentCar;
+    public CarController parentCar;
 
     void Awake()
     {

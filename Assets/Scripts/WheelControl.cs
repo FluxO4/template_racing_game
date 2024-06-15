@@ -26,6 +26,7 @@ public class WheelControl : MonoBehaviour
         wheelModel.transform.position = position;
         wheelModel.transform.rotation =  basicRotation;
 
+
         // wheelModel.transform.rotation = Quaternion.RotateTowards(wheelModel.transform.rotation, rotation * basicRotation, 150 * Time.deltaTime);
     }
 }
