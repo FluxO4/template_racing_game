@@ -207,12 +207,14 @@ public class CarHybrid : MonoBehaviour
 
             horizontal = hInput;
 
+            float biasedHorizontalParabolicComplement = 0.1f + 0.9f * (1 - horizontal*horizontal);
+
             if (accelerating)
             {
-                vertical = 1;
+                vertical = 1 * biasedHorizontalParabolicComplement;
             }else if (backing)
             {
-                vertical = -1;
+                vertical = -1 * biasedHorizontalParabolicComplement;
             }
             else { 
 

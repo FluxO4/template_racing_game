@@ -293,10 +293,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hybrid Car
       objectReference: {fileID: 0}
-    - target: {fileID: 9070141719532369207, guid: 1d89ce502674a8a4794f41f37e0833b6, type: 3}
-      propertyPath: acceleration
-      value: 30
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1d89ce502674a8a4794f41f37e0833b6, type: 3}
 --- !u!1001 &976083269

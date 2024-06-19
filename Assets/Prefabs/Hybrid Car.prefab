@@ -800,7 +800,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773d816a6d918ee45b1d3fa10e072ccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 20
+  acceleration: 30
   forwardsFriction: 0.02
   sidewaysFriction: 10
   airResistance: 0.01
