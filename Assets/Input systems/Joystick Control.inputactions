@@ -31,13 +31,22 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SteerTilt",
+                    "type": "Value",
+                    "id": "7cf5fc70-f2ef-4706-b246-ff471956e49d",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
                 {
                     "name": "",
                     "id": "90ad1135-7b60-431b-a913-fd6f77c4b964",
-                    "path": "<HID::DragonRise Inc.   Generic   USB  Joystick  >/stick",
+                    "path": "<XInputController>/leftStick",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -48,7 +57,7 @@
                 {
                     "name": "",
                     "id": "013dd096-4a02-4f35-8c3f-097f6fa174c9",
-                    "path": "<HID::DragonRise Inc.   Generic   USB  Joystick  >/button2",
+                    "path": "<XInputController>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -59,11 +68,22 @@
                 {
                     "name": "",
                     "id": "3fe86015-bc74-44d0-a03a-f9fb728fcc72",
-                    "path": "<HID::DragonRise Inc.   Generic   USB  Joystick  >/button3",
+                    "path": "<XInputController>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "918ce142-c4b8-463e-8d03-f03e871c8a24",
+                    "path": "<Accelerometer>/acceleration",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SteerTilt",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class CarHybrid : MonoBehaviour
@@ -19,7 +20,7 @@ public class CarHybrid : MonoBehaviour
 
     [Space(10)]
     // nitro stuff
-    public int nitroCharges = 3;
+     public int nitroCharges = 3;
     public int currentNitroCharges;     // public for debugging
     public float nitroCoolDown;
     public float currentNitroCoolDown;  // public for debugging
@@ -105,18 +106,26 @@ public class CarHybrid : MonoBehaviour
     float vInput = 0;
     float hInput = 0;
 
-    bool accelerating = false;
-    bool backing = false;
+     public bool accelerating = false;
+     public bool backing = false;
+     public bool nitro = false;
 
-    private void OnSteer(InputValue value)
+     private void OnSteer(InputValue value)
     {
         Vector2 vectorValue = value.Get<Vector2>();
         //Debug.Log("Detected vector: " + vectorValue);
         vInput = vectorValue.y;
         hInput = vectorValue.x;
     }
+     private void OnSteerTilt(InputValue value)
+     {
+          Vector3 vectorValue = value.Get<Vector3>();
+          Debug.Log("Detected vector: " + vectorValue);
+          vInput = vectorValue.y;
+          hInput = vectorValue.x;
+     }
 
-    private void OnAccelerate(InputValue value)
+     private void OnAccelerate(InputValue value)
     {
         if (value.isPressed)
         {
@@ -128,7 +137,7 @@ public class CarHybrid : MonoBehaviour
         }
     }
 
-    private void OnBack(InputValue value)
+     private void OnBack(InputValue value)
     {
         if (value.isPressed)
         {
@@ -154,9 +163,13 @@ public class CarHybrid : MonoBehaviour
 
         currentNitroCharges = nitroCharges;
 
-    }
+     #if UNITY_ANDROID
+          accelerating = true;
+     #endif
 
-    private void Update()
+     }
+
+     private void Update()
     {
 
         if (Input.GetKeyDown(KeyCode.N)) // debug nitro gaining
@@ -342,7 +355,7 @@ public class CarHybrid : MonoBehaviour
 
 
         float wheelColliderSteerAngle = Mathf.Clamp(1 / (wheelColliderSteerTime * rb.velocity.magnitude + 0.1f), 0, 25);
-        Debug.Log(wheelColliderSteerAngle);
+        //Debug.Log(wheelColliderSteerAngle);
         if (wheelMeshes[0] && wheelMeshes[1])
         {
             //wheelMeshes[0].localEulerAngles = new Vector3(0, horizontal*20, 0);
