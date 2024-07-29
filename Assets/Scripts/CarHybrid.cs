@@ -1,10 +1,11 @@
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class CarHybrid : MonoBehaviour
+public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 {
     public float acceleration = 10f;
     Vector3 velocity = Vector3.zero;
@@ -20,7 +21,7 @@ public class CarHybrid : MonoBehaviour
 
     [Space(10)]
     // nitro stuff
-    public int nitroCharges = 3;
+     public int nitroCharges = 3;
     public int currentNitroCharges;     // public for debugging
     public float nitroCoolDown;
     public float currentNitroCoolDown;  // public for debugging
@@ -102,53 +103,100 @@ public class CarHybrid : MonoBehaviour
     [ReadOnly(true)]
     public float rollCorrection = 0;
 
-
-    float vInput = 0;
+     float vInput = 0;
     float hInput = 0;
 
-    bool accelerating = false;
-    bool backing = false;
+     public bool accelerating = false;
+     public bool backing = false;
+     public bool nitro = false;
 
-    private void OnSteer(InputValue value)
-    {
-        Vector2 vectorValue = value.Get<Vector2>();
-        //Debug.Log("Detected vector: " + vectorValue);
-        vInput = vectorValue.y;
-        hInput = vectorValue.x;
-    }
+     private JoystickControl controls;
 
-    private void OnAccelerate(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            accelerating = true;
-        }
-        else
-        {
-            accelerating = false;
-        }
-    }
+     private void Awake()
+     {
+          controls = new JoystickControl();
+     }
 
-    private void OnBack(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            backing = true;
-        }
-        else
-        {
-            backing = false;
-        }
-    }
+     private void OnEnable()
+     {
+          controls.CarControl.SetCallbacks(this);
+          controls.CarControl.Enable();
+     }
 
-    private void OnNitro(InputValue value)
-    {
-        
-    }
+     private void OnDisable()
+     {
+          controls.CarControl.Disable();
+     }
+     public void OnSteerTilt(InputAction.CallbackContext context)
+     {
+          Vector3 vectorValue = context.ReadValue<Vector3>();
+          Debug.Log("Detected vector: " + vectorValue);
+          vInput = vectorValue.y;
+          hInput = vectorValue.x;
+     }
+     // private void OnSteer(InputValue value)
+     //{
+     //    Vector2 vectorValue = value.Get<Vector2>();
+     //    //Debug.Log("Detected vector: " + vectorValue);
+     //    vInput = vectorValue.y;
+     //    hInput = vectorValue.x;
+     //}
 
+     // private void OnAccelerate(InputValue value)
+     //{
+     //    if (value.isPressed)
+     //    {
+     //        accelerating = true;
+     //    }
+     //    else
+     //    {
+     //        accelerating = false;
+     //    }
+     //}
 
+     // private void OnBack(InputValue value)
+     //{
+     //    if (value.isPressed)
+     //    {
+     //        backing = true;
+     //    }
+     //    else
+     //    {
+     //        backing = false;
+     //    }
+     //}
 
-    float SteeringValue(float x) => steeringA * (steeringC * x) / (1 + steeringB * (steeringC * x) * (steeringC * x));
+     public void OnSteer(InputAction.CallbackContext context)
+     {
+          Vector2 vectorValue = context.ReadValue<Vector2>();
+          vInput = vectorValue.y;
+          hInput = vectorValue.x;
+     }
+
+     public void OnAccelerate(InputAction.CallbackContext context)
+     {
+          if (context.performed)
+          {
+               accelerating = true;
+          }
+          else if (context.canceled)
+          {
+               accelerating = false;
+          }
+     }
+
+     public void OnBack(InputAction.CallbackContext context)
+     {
+          if (context.performed)
+          {
+               backing = true;
+          }
+          else if (context.canceled)
+          {
+               backing = false;
+          }
+     }
+     float SteeringValue(float x) => steeringA * (steeringC * x) / (1 + steeringB * (steeringC * x) * (steeringC * x));
 
     private void Start()
     {
@@ -162,9 +210,13 @@ public class CarHybrid : MonoBehaviour
 
         currentNitroCharges = nitroCharges;
 
-    }
+#if UNITY_ANDROID
+          accelerating = true;
+#endif
 
-    private void Update()
+     }
+
+     private void Update()
     {
 
         if (Input.GetKeyDown(KeyCode.N)) // debug nitro gaining
@@ -208,7 +260,13 @@ public class CarHybrid : MonoBehaviour
         float horizontal = 0;
         bool brake = false;
 
-        if (playerCar)
+#if UNITY_ANDROID
+          //Accelerometer
+          Vector3 vectorValue = Input.acceleration;
+          Debug.Log("Detected vector: " + vectorValue);
+          hInput = vectorValue.x;
+#endif
+          if (playerCar)
         {
             //vertical = Input.GetAxis("Vertical");
             //horizontal = Input.GetAxis("Horizontal");
@@ -350,7 +408,7 @@ public class CarHybrid : MonoBehaviour
 
 
         float wheelColliderSteerAngle = Mathf.Clamp(1 / (wheelColliderSteerTime * rb.velocity.magnitude + 0.1f), 0, 25);
-        Debug.Log(wheelColliderSteerAngle);
+        //Debug.Log(wheelColliderSteerAngle);
         if (wheelMeshes[0] && wheelMeshes[1])
         {
             //wheelMeshes[0].localEulerAngles = new Vector3(0, horizontal*20, 0);

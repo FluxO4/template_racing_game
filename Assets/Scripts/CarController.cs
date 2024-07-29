@@ -79,8 +79,15 @@ public class CarController : MonoBehaviour
         vInput = vectorValue.y;
         hInput = vectorValue.x;
     }
+     private void OnSteerTilt(InputValue value)
+     {
+          Vector3 vectorValue = value.Get<Vector3>();
+          Debug.Log("Detected vector: " + vectorValue);
+          vInput = vectorValue.y;
+          hInput = vectorValue.x;
+     }
 
-    public void Update()
+     public void Update()
     {
         //Vector2 joystickInput = Gamepad.current.leftStick.ReadValue();
 

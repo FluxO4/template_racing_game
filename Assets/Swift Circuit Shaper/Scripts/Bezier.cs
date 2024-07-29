@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,3 +19,4 @@ public static class Bezier {
         return Vector3.Lerp(p0, p1, t);
     }
 }
+#endif
