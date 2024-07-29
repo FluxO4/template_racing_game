@@ -2,6 +2,7 @@ using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CarHybrid : MonoBehaviour
 {
@@ -139,6 +140,13 @@ public class CarHybrid : MonoBehaviour
             backing = false;
         }
     }
+
+    private void OnNitro(InputValue value)
+    {
+        
+    }
+
+
 
     float SteeringValue(float x) => steeringA * (steeringC * x) / (1 + steeringB * (steeringC * x) * (steeringC * x));
 
