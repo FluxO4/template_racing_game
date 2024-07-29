@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RaceController : MonoBehaviour
 {
     // Start is called before the first frame update
-
-
-
 
     public List<GameObject> playerCarPrefabs = new List<GameObject>();
     public GameObject aiCarPrefab;
@@ -119,9 +117,6 @@ public class RaceController : MonoBehaviour
         }
     }
 
-    
-
-
 
     #region Singleton stuff
     public static RaceController i
@@ -132,8 +127,8 @@ public class RaceController : MonoBehaviour
         }
     }
     public static RaceController instance;
-
-    private void Awake()
+   
+     private void Awake()
     {
         if (!instance)
         {

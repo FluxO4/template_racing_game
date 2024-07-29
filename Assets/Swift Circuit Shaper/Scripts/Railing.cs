@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Linq;
 using UnityEngine;
 
@@ -144,3 +145,4 @@ public class Railing : MonoBehaviour
         
     }
 }
+#endif
