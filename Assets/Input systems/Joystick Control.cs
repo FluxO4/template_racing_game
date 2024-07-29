@@ -67,22 +67,22 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""90ad1135-7b60-431b-a913-fd6f77c4b964"",
-                    ""path"": ""<XInputController>/leftStick"",
+                    ""id"": ""013dd096-4a02-4f35-8c3f-097f6fa174c9"",
+                    ""path"": ""<XInputController>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Steer"",
+                    ""groups"": ""Xbox controller"",
+                    ""action"": ""Accelerate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""013dd096-4a02-4f35-8c3f-097f6fa174c9"",
-                    ""path"": ""<XInputController>/rightTrigger"",
+                    ""id"": ""7942556e-5b3c-4776-926d-c60ecb6bef73"",
+                    ""path"": ""<HID::DragonRise Inc.   Generic   USB  Joystick  >/button2"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""PS3 Controller"",
                     ""action"": ""Accelerate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -93,7 +93,18 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
                     ""path"": ""<XInputController>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Xbox controller"",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aff48dce-0bac-4349-9f8c-902b37090acf"",
+                    ""path"": ""<HID::DragonRise Inc.   Generic   USB  Joystick  >/button3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PS3 Controller"",
                     ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -108,11 +119,44 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
                     ""action"": ""SteerTilt"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90ad1135-7b60-431b-a913-fd6f77c4b964"",
+                    ""path"": ""<XInputController>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Xbox controller"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e89b1784-0d65-4092-b150-68f4ea86e64c"",
+                    ""path"": ""<HID::DragonRise Inc.   Generic   USB  Joystick  >/stick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PS3 Controller"",
+                    ""action"": ""Steer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
     ],
-    ""controlSchemes"": []
+    ""controlSchemes"": [
+        {
+            ""name"": ""Xbox controller"",
+            ""bindingGroup"": ""Xbox controller"",
+            ""devices"": []
+        },
+        {
+            ""name"": ""PS3 Controller"",
+            ""bindingGroup"": ""PS3 Controller"",
+            ""devices"": []
+        }
+    ]
 }");
         // Car Control
         m_CarControl = asset.FindActionMap("Car Control", throwIfNotFound: true);
@@ -247,6 +291,24 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         }
     }
     public CarControlActions @CarControl => new CarControlActions(this);
+    private int m_XboxcontrollerSchemeIndex = -1;
+    public InputControlScheme XboxcontrollerScheme
+    {
+        get
+        {
+            if (m_XboxcontrollerSchemeIndex == -1) m_XboxcontrollerSchemeIndex = asset.FindControlSchemeIndex("Xbox controller");
+            return asset.controlSchemes[m_XboxcontrollerSchemeIndex];
+        }
+    }
+    private int m_PS3ControllerSchemeIndex = -1;
+    public InputControlScheme PS3ControllerScheme
+    {
+        get
+        {
+            if (m_PS3ControllerSchemeIndex == -1) m_PS3ControllerSchemeIndex = asset.FindControlSchemeIndex("PS3 Controller");
+            return asset.controlSchemes[m_PS3ControllerSchemeIndex];
+        }
+    }
     public interface ICarControlActions
     {
         void OnSteer(InputAction.CallbackContext context);
