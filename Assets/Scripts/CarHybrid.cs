@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
 using UnityEngine.UI;
 
 public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
@@ -238,6 +239,17 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
                backing = false;
           }
      }
+
+     public void OnDrift(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            drifting = true;
+        }else if (context.canceled)
+        {
+            drifting= false;
+        }
+    }
      float SteeringValue(float x) => steeringA * (steeringC * x) / (1 + steeringB * (steeringC * x) * (steeringC * x));
      public void AccelerationOn()
      {

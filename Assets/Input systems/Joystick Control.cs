@@ -62,6 +62,15 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Drift"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""22145ad6-7f5a-4d31-90fa-6d84aa8471f5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -141,6 +150,17 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
                     ""action"": ""Steer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a285d36-873a-43b2-9efb-99416e93a6a9"",
+                    ""path"": ""<HID::DragonRise Inc.   Generic   USB  Joystick  >/button6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         m_CarControl_Accelerate = m_CarControl.FindAction("Accelerate", throwIfNotFound: true);
         m_CarControl_Back = m_CarControl.FindAction("Back", throwIfNotFound: true);
         m_CarControl_SteerTilt = m_CarControl.FindAction("SteerTilt", throwIfNotFound: true);
+        m_CarControl_Drift = m_CarControl.FindAction("Drift", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -229,6 +250,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
     private readonly InputAction m_CarControl_Accelerate;
     private readonly InputAction m_CarControl_Back;
     private readonly InputAction m_CarControl_SteerTilt;
+    private readonly InputAction m_CarControl_Drift;
     public struct CarControlActions
     {
         private @JoystickControl m_Wrapper;
@@ -237,6 +259,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         public InputAction @Accelerate => m_Wrapper.m_CarControl_Accelerate;
         public InputAction @Back => m_Wrapper.m_CarControl_Back;
         public InputAction @SteerTilt => m_Wrapper.m_CarControl_SteerTilt;
+        public InputAction @Drift => m_Wrapper.m_CarControl_Drift;
         public InputActionMap Get() { return m_Wrapper.m_CarControl; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -258,6 +281,9 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             @SteerTilt.started += instance.OnSteerTilt;
             @SteerTilt.performed += instance.OnSteerTilt;
             @SteerTilt.canceled += instance.OnSteerTilt;
+            @Drift.started += instance.OnDrift;
+            @Drift.performed += instance.OnDrift;
+            @Drift.canceled += instance.OnDrift;
         }
 
         private void UnregisterCallbacks(ICarControlActions instance)
@@ -274,6 +300,9 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             @SteerTilt.started -= instance.OnSteerTilt;
             @SteerTilt.performed -= instance.OnSteerTilt;
             @SteerTilt.canceled -= instance.OnSteerTilt;
+            @Drift.started -= instance.OnDrift;
+            @Drift.performed -= instance.OnDrift;
+            @Drift.canceled -= instance.OnDrift;
         }
 
         public void RemoveCallbacks(ICarControlActions instance)
@@ -315,5 +344,6 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         void OnAccelerate(InputAction.CallbackContext context);
         void OnBack(InputAction.CallbackContext context);
         void OnSteerTilt(InputAction.CallbackContext context);
+        void OnDrift(InputAction.CallbackContext context);
     }
 }
