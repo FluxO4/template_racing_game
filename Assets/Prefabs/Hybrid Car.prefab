@@ -778,7 +778,8 @@ MonoBehaviour:
   stunting: 0
   breakForce: 0.05
   isOnGround: 0
-  speed: 0
+  _speed: 0
+  speedText: {fileID: 0}
   xTarget: 0
   zTarget: 0
   wheelColliderss:
@@ -808,6 +809,11 @@ MonoBehaviour:
   correctionLiftAmount: 100
   pitchCorrection: 0
   rollCorrection: 0
+  vInputText: {fileID: 0}
+  hInputText: {fileID: 0}
+  accelerating: 0
+  backing: 0
+  nitro: 0
   playerCar: 0
 --- !u!114 &2229820158384730638
 MonoBehaviour:

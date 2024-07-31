@@ -105,6 +105,12 @@ public class VariableSliderManager : MonoBehaviour
                  maxValue = 1,
                  playerPrefKey = "TurnBiasBias"
             },
+            new SliderConfig {
+                 variableName = "suspensionDistance",
+                 minValue = 0,
+                 maxValue = 1,
+                 playerPrefKey = "SuspensionDistance"
+            },
           };
 
           foreach (var config in sliderConfigs)
@@ -153,6 +159,13 @@ public class VariableSliderManager : MonoBehaviour
                     return value => carHybrid.turnBiasFactor = value;
                case "turnBiasBias":
                     return value => carHybrid.turnBiasBias = value;
+               case "suspensionDistance":
+                    return value => {
+                         foreach (var wheel in carHybrid.wheelColliderss)
+                         {
+                              wheel.suspensionDistance = value;
+                         }
+                    };
                default:
                     Debug.LogError("Variable not found: " + variableName);
                     return null;

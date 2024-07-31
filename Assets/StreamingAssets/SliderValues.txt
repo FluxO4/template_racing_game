@@ -1,5 +1,5 @@
 Acceleration = 63.37234
-AngularVelocity = -1.5
+AngularVelocity = -0.7769337
 SteeringA = 2.5
 SteeringB = 0.05
 SteeringC = 0.2
@@ -12,3 +12,4 @@ AirResistance = 0.01
 GravityValue = 10
 TurnBiasFactor = 1
 TurnBiasBias = 0.2
+SuspensionDistance = 0.2435844
