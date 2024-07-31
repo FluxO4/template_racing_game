@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class VariableSlider : MonoBehaviour
 {
@@ -8,22 +9,22 @@ public class VariableSlider : MonoBehaviour
      public Text valueText;
 
      private string playerPrefKey;
-     private System.Func<float> variableReference;
+     private System.Action<float> setVariableAction;
 
-     public void SetupSlider(float minValue, float maxValue, System.Func<float> variableReference, string playerPrefKey)
+     public void SetupSlider(float minValue, float maxValue, System.Action<float> setVariableAction, string playerPrefKey)
      {
           this.playerPrefKey = playerPrefKey;
-          this.variableReference = variableReference;
+          this.setVariableAction = setVariableAction;
 
           slider.minValue = minValue;
           slider.maxValue = maxValue;
 
-          // Load the value from PlayerPrefs
-          float savedValue = PlayerPrefs.GetFloat(playerPrefKey, slider.minValue);
+          // Load the value from the file
+          float savedValue = LoadValueFromFile(playerPrefKey, slider.minValue);
           slider.value = savedValue;
 
           // Set the initial value of the variable
-          SetVariableValue(savedValue);
+          setVariableAction(savedValue);
 
           // Update the UI texts
           nameText.text = playerPrefKey;
@@ -38,22 +39,59 @@ public class VariableSlider : MonoBehaviour
           // Update the text field
           valueText.text = value.ToString("F2");
 
-          // Save the value to PlayerPrefs
-          PlayerPrefs.SetFloat(playerPrefKey, value);
+          // Save the value to the file
+          SaveValueToFile(playerPrefKey, value);
 
           // Update the variable reference
-          SetVariableValue(value);
+          setVariableAction(value);
      }
 
-     private void SetVariableValue(float value)
+     private float LoadValueFromFile(string key, float defaultValue)
      {
-          if (variableReference != null)
+          string path = Path.Combine(Application.streamingAssetsPath, "SliderValues.txt");
+          if (File.Exists(path))
           {
-               var variableField = variableReference.Target.GetType().GetField(variableReference.Method.Name.Substring(4));
-               if (variableField != null)
+               string[] lines = File.ReadAllLines(path);
+               foreach (var line in lines)
                {
-                    variableField.SetValue(variableReference.Target, value);
+                    string[] parts = line.Split('=');
+                    if (parts.Length == 2 && parts[0].Trim() == key)
+                    {
+                         if (float.TryParse(parts[1].Trim(), out float value))
+                         {
+                              return value;
+                         }
+                    }
                }
+          }
+          return defaultValue;
+     }
+
+     private void SaveValueToFile(string key, float value)
+     {
+          string path = Path.Combine(Application.streamingAssetsPath, "SliderValues.txt");
+          string[] lines = File.Exists(path) ? File.ReadAllLines(path) : new string[0];
+          bool found = false;
+          for (int i = 0; i < lines.Length; i++)
+          {
+               string[] parts = lines[i].Split('=');
+               if (parts.Length == 2 && parts[0].Trim() == key)
+               {
+                    lines[i] = $"{key} = {value}";
+                    found = true;
+                    break;
+               }
+          }
+          if (!found)
+          {
+               using (StreamWriter sw = new StreamWriter(path, true))
+               {
+                    sw.WriteLine($"{key} = {value}");
+               }
+          }
+          else
+          {
+               File.WriteAllLines(path, lines);
           }
      }
 }
