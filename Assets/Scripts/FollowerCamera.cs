@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class FollowerCamera : MonoBehaviour
 {
-    public float followDistance;
-    public float followHeight;
+    public float followDistance=3f;
+    public float followHeight = 30f;
     
-    public float rotationLerpRate;
-    public float heightLerpRate;
+    public float rotationLerpRate = 3f;
+    public float heightLerpRate = 2f;
 
     public Transform target;
 

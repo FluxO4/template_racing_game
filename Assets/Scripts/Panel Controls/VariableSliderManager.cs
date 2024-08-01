@@ -5,6 +5,7 @@ public class VariableSliderManager : MonoBehaviour
 {
      public GameObject variableSliderPrefab;
      public CarHybrid carHybrid;  // Reference to your CarHybrid script
+     public CameraTiltAndShift cameraTiltAndShift;  // Reference to your CameraTiltAndShift script
 
      [System.Serializable]
      public class SliderConfig
@@ -111,6 +112,28 @@ public class VariableSliderManager : MonoBehaviour
                  maxValue = 1,
                  playerPrefKey = "SuspensionDistance"
             },
+            //slider configs for tilt amount, shift amount and shift lerp rate
+            new SliderConfig
+            {
+               variableName = "tiltAmount",
+               minValue = 0,
+               maxValue = 180,
+               playerPrefKey = "TiltAmount"
+            },
+            new SliderConfig
+            {
+               variableName = "shiftAmount",
+               minValue = 0,
+               maxValue = 20,
+               playerPrefKey = "ShiftAmount"
+            },
+            new SliderConfig
+            {
+               variableName = "shiftLerpRate",
+               minValue = 0,
+               maxValue = 20,
+               playerPrefKey = "ShiftLerpRate"
+            }
           };
 
           foreach (var config in sliderConfigs)
@@ -160,12 +183,19 @@ public class VariableSliderManager : MonoBehaviour
                case "turnBiasBias":
                     return value => carHybrid.turnBiasBias = value;
                case "suspensionDistance":
-                    return value => {
+                    return value =>
+                    {
                          foreach (var wheel in carHybrid.wheelColliderss)
                          {
                               wheel.suspensionDistance = value;
                          }
                     };
+               case "tiltAmount":
+                    return value => cameraTiltAndShift.tiltAmount = value;
+               case "shiftAmount":
+                    return value => cameraTiltAndShift.shiftAmount = value;
+               case "shiftLerpRate":
+                    return value => cameraTiltAndShift.shiftLerpRate = value;
                default:
                     Debug.LogError("Variable not found: " + variableName);
                     return null;

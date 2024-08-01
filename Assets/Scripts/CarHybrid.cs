@@ -29,6 +29,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
      public float nitroDuration;
      public float currentNitroDuration;  // public for debugging
      public float nitroFactor;
+     public ParticleSystem nitroParticles;
 
      public bool stunting;   // public for debugging
 
@@ -273,6 +274,8 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
           currentSidewaysFriction = sidewaysFriction;
           currentForwardsFriction = forwardsFriction;
 
+          nitroParticles.Stop();
+          nitroParticles.Clear();
           currentNitroCharges = nitroCharges;
 
 #if UNITY_ANDROID
@@ -289,17 +292,25 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
                currentNitroCharges++;
           }
 
-          if (Input.GetKeyDown(KeyCode.C))
+          if (Input.GetKeyDown(KeyCode.C) || nitro)
           {
+               Debug.Log("Nitro!");
                if (currentNitroCoolDown == 0)
                {
                     if (currentNitroCharges > 0)
                     {
                          currentNitroDuration = nitroDuration;
+                         if (nitroParticles != null)
+                         {
+                              var mainModule = nitroParticles.main;
+                              mainModule.duration = nitroDuration;
+                              nitroParticles.Play();
+                         }
                          currentNitroCoolDown = nitroCoolDown;
                          currentNitroCharges--;
                     }
                }
+               nitro = false;
           }
 
      }
@@ -328,7 +339,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 #if UNITY_ANDROID
           //Accelerometer
           Vector3 vectorValue = Input.acceleration;
-          Debug.Log("Detected vector: " + vectorValue);
+          //Debug.Log("Detected vector: " + vectorValue);
           hInput = vectorValue.x;
 #endif
           if (playerCar)
@@ -390,6 +401,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
           {
                currentNitroDuration = Mathf.Max(0, currentNitroDuration - Time.fixedDeltaTime);
                currentAcceleration *= nitroFactor;
+
           }
 
           if (currentNitroCoolDown > 0)

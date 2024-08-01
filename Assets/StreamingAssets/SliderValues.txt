@@ -13,3 +13,6 @@ GravityValue = 4
 TurnBiasFactor = 1
 TurnBiasBias = 0.2
 SuspensionDistance = 0.1736924
+TiltAmount = 96.8373
+ShiftAmount = 3.372079
+ShiftLerpRate = 3.519392
