@@ -32,6 +32,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     public float nitroDuration;
     public float nitroFactor;
     public ParticleSystem nitroParticles;
+    public ParticleSystem cameraNitroParticles;
 
     public bool stunting;   // public for debugging
 
@@ -76,9 +77,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
     [Space(10)]
 
-    public WheelCollider[] wheelColliderss = new WheelCollider[4];
 
-    public Transform[] wheelMeshes = new Transform[4];
 
 
     public GameObject carVisual;
@@ -87,6 +86,9 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     bool _drifting;
 
 
+
+    WheelFrictionCurve _baseForwardFriction;
+    WheelFrictionCurve _baseSidewaysFriction;
 
 
     bool drifting
@@ -98,6 +100,33 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
         set
         {
+            if (value)
+            {
+                foreach (WheelCollider wc in wheelColliderss)
+                {
+                    WheelFrictionCurve temp = _baseSidewaysFriction;
+
+                    temp.stiffness = 0.5f;
+
+
+                    wc.sidewaysFriction = temp;
+                }
+
+
+                DriftCloud.Play();
+            }
+            else
+            {
+                foreach (WheelCollider wc in wheelColliderss)
+                {
+                    wc.sidewaysFriction = _baseSidewaysFriction;
+                }
+
+                DriftCloud.Stop();
+            }
+
+
+
             _drifting = value;
 
 
@@ -112,7 +141,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     public float driftSpeed = 100f;
     float turnBias = 0;
 
-
+    public ParticleSystem DriftCloud;
 
 
     public float wheelRadius = 0.5f;
@@ -143,6 +172,10 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     [ReadOnly(true)]
     public float rollCorrection = 0;
 
+    public WheelCollider[] wheelColliderss = new WheelCollider[4];
+
+    public Transform[] wheelMeshes = new Transform[4];
+
     float vInput = 0;
     float hInput = 0;
     public Text vInputText;
@@ -150,6 +183,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
     float _vertical = 0;
     float _horizontal = 0;
+
 
     public float vertical
     {
@@ -316,20 +350,18 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     {
         nitro = true;
         
+        nitroParticles.Play();
 
-        if (nitroParticles != null)
-        {
-            var mainModule = nitroParticles.main;
-            mainModule.duration = nitroDuration;
-            nitroParticles.Play();
-        }
+        cameraNitroParticles?.Play();
+        
 
         yield return new WaitForSeconds(nitroDuration);
 
-        if (nitroParticles != null)
-        {
-            nitroParticles.Stop();
-        }
+
+        nitroParticles.Stop();
+
+        cameraNitroParticles?.Stop();
+        
         nitro = false;
 
         yield return new WaitForSeconds(nitroCoolDown);
@@ -342,6 +374,11 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     {
         vInput = 0;
         hInput = 0;
+
+        _baseForwardFriction = wheelColliderss[0].forwardFriction;
+        _baseSidewaysFriction = wheelColliderss[0].sidewaysFriction;
+
+
 
         if (!RaceController.i)
         {
@@ -497,7 +534,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
         {
             turnBias = horizontal * turnBiasFactor + turnBiasSign * turnBiasBias;
             horizontal += turnBias;
-            targetSidewaysFriction = 0;
+            targetSidewaysFriction = 1;
             //targetForwardsFriction = 0;
         }else if (!drifting)
         {
