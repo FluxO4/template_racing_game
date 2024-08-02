@@ -26,9 +26,13 @@ public class VariableSlider : MonoBehaviour
         // Load the value from the file
         float savedValue = myConfig.defaultValue;
 
-#if UNITY_EDITOR
-        LoadValueFromFile(playerPrefKey, slider.minValue);
-#endif
+
+        //LoadValueFromFile(playerPrefKey, slider.minValue);
+
+        PlayerPrefs.GetFloat(playerPrefKey, myConfig.defaultValue);
+
+
+
         slider.value = savedValue;
 
           // Set the initial value of the variable
@@ -56,9 +60,11 @@ public class VariableSlider : MonoBehaviour
           valueText.text = value.ToString("F3");
 
         // Save the value to the file
-#if UNITY_EDITOR
-        SaveValueToFile(playerPrefKey, value);
-#endif
+
+       // SaveValueToFile(playerPrefKey, value);
+
+        PlayerPrefs.SetFloat(playerPrefKey, value);
+
 
           // Update the variable reference
           setVariableAction(value);

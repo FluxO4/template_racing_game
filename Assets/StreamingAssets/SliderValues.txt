@@ -16,3 +16,5 @@ SuspensionDistance = 0.5
 TiltAmount = 96.83
 ShiftAmount = 3.372
 ShiftLerpRate = 3.519
+TiltInputMultiplier = 2
+TiltLerpRate = 3.519

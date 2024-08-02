@@ -135,6 +135,16 @@ public class VariableSliderManager : MonoBehaviour
             //slider configs for tilt amount, shift amount and shift lerp rate
             new SliderConfig
             {
+               variableName = "tiltInputMultiplier",
+               minValue = 0,
+               maxValue = 5,
+               defaultValue = 2,
+               playerPrefKey = "TiltInputMultiplier"
+            },
+
+
+            new SliderConfig
+            {
                variableName = "tiltAmount",
                minValue = 0,
                maxValue = 180,
@@ -156,6 +166,14 @@ public class VariableSliderManager : MonoBehaviour
                maxValue = 20,
                defaultValue = 3.519f,
                playerPrefKey = "ShiftLerpRate"
+            },
+            new SliderConfig
+            {
+               variableName = "tiltLerpRate",
+               minValue = 0,
+               maxValue = 20,
+               defaultValue = 3.519f,
+               playerPrefKey = "TiltLerpRate"
             }
           };
 
@@ -236,12 +254,16 @@ public class VariableSliderManager : MonoBehaviour
                               wheel.suspensionDistance = value;
                          }
                     };
+            case "tiltInputMultiplier":
+                return value => carHybrid.tiltInputMultiplier = value;
                case "tiltAmount":
                     return value => cameraTiltAndShift.tiltAmount = value;
                case "shiftAmount":
                     return value => cameraTiltAndShift.shiftAmount = value;
                case "shiftLerpRate":
                     return value => cameraTiltAndShift.shiftLerpRate = value;
+            case "tiltLerpRate":
+                return value => cameraTiltAndShift.tiltLerpRate = value;
                default:
                     Debug.LogError("Variable not found: " + variableName);
                     return null;

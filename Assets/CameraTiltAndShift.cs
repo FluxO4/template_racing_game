@@ -4,11 +4,14 @@ public class CameraTiltAndShift : MonoBehaviour
 {
      public float tiltAmount = 90f; // Maximum tilt angle based on accelerometer input
      public float shiftAmount = 5f; // Maximum shift amount based on accelerometer input
+    public float tiltLerpRate = 0.5f;
      public float shiftLerpRate = 2f; // Lerp rate for smooth shifting
 
      private float shift = 0f; // Global shift variable
      private float currentShift = 0f; // Current shift amount
      private Transform target; // Reference to the target
+
+    private float currentTilt = 0f;
 
      private Vector3 initialLocalPosition; // Initial local position of the camera
 
@@ -34,6 +37,10 @@ public class CameraTiltAndShift : MonoBehaviour
 
           // Calculate tilt angle based on accelerometer input
           float tiltAngle = tiltAmount * accelerometerInput.x;
+
+        float tiltDifference = Mathf.Abs(currentTilt - tiltAngle);
+
+          currentTilt = Mathf.Lerp(currentTilt, tiltAmount, tiltLerpRate * Time.fixedDeltaTime * tiltDifference);
 
           // Apply tilt to the camera
           transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, tiltAngle);

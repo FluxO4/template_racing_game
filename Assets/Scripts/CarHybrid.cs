@@ -210,6 +210,9 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
         }
     }
 
+    public float tiltInputMultiplier = 2;
+
+
     public bool accelerating = false;
     public bool autoAccelerating = false;
     public bool backing = false;
@@ -427,7 +430,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
           //Accelerometer
           Vector3 vectorValue = Input.acceleration;
           //Debug.Log("Detected vector: " + vectorValue);
-          hInput = vectorValue.x;
+          hInput = Mathf.Clamp(vectorValue.x * tiltInputMultiplier, -1, 1);
 #endif
         if (playerCar)
         {
