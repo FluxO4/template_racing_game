@@ -192,8 +192,8 @@ public class VariableSliderManager : MonoBehaviour
           VariableSlider variableSlider = sliderInstance.GetComponent<VariableSlider>();
           sliderObjects.Add(variableSlider);
 
-          variableSlider.SetupSlider(config.minValue, config.maxValue, GetVariableSetter(config.variableName), config.playerPrefKey);
-        variableSlider.myConfig = config;
+          variableSlider.SetupSlider(config.minValue, config.maxValue, GetVariableSetter(config.variableName), config.playerPrefKey, config);
+
      }
 
      System.Action<float> GetVariableSetter(string variableName)

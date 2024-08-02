@@ -12,7 +12,7 @@ public class VariableSlider : MonoBehaviour
      private string playerPrefKey;
      private System.Action<float> setVariableAction;
 
-     public void SetupSlider(float minValue, float maxValue, System.Action<float> setVariableAction, string playerPrefKey)
+     public void SetupSlider(float minValue, float maxValue, System.Action<float> setVariableAction, string playerPrefKey, VariableSliderManager.SliderConfig configRef)
      {
           this.playerPrefKey = playerPrefKey;
           this.setVariableAction = setVariableAction;
@@ -20,9 +20,16 @@ public class VariableSlider : MonoBehaviour
           slider.minValue = minValue;
           slider.maxValue = maxValue;
 
-          // Load the value from the file
-          float savedValue = LoadValueFromFile(playerPrefKey, slider.minValue);
-          slider.value = savedValue;
+        myConfig = configRef;
+
+
+        // Load the value from the file
+        float savedValue = myConfig.defaultValue;
+
+#if UNITY_EDITOR
+        LoadValueFromFile(playerPrefKey, slider.minValue);
+#endif
+        slider.value = savedValue;
 
           // Set the initial value of the variable
           setVariableAction(savedValue);
@@ -48,8 +55,10 @@ public class VariableSlider : MonoBehaviour
           // Update the text field
           valueText.text = value.ToString("F3");
 
-          // Save the value to the file
-          SaveValueToFile(playerPrefKey, value);
+        // Save the value to the file
+#if UNITY_EDITOR
+        SaveValueToFile(playerPrefKey, value);
+#endif
 
           // Update the variable reference
           setVariableAction(value);
