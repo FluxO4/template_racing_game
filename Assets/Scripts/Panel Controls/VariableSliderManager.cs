@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class VariableSliderManager : MonoBehaviour
@@ -7,109 +8,128 @@ public class VariableSliderManager : MonoBehaviour
      public CarHybrid carHybrid;  // Reference to your CarHybrid script
      public CameraTiltAndShift cameraTiltAndShift;  // Reference to your CameraTiltAndShift script
 
+    public Transform sliderParent;
+
      [System.Serializable]
      public class SliderConfig
      {
           public string variableName;
           public float minValue;
           public float maxValue;
+        public float defaultValue;
           public string playerPrefKey;
      }
 
      public SliderConfig[] sliderConfigs;
+    public List<VariableSlider> sliderObjects = new List<VariableSlider>();
 
      void Start()
      {
-          sliderConfigs = new SliderConfig[]
-          {
+        sliderConfigs = new SliderConfig[]
+        {
             new SliderConfig {
                  variableName = "acceleration",
                  minValue = 0,
                  maxValue = 100,
+                 defaultValue = 17f,
                  playerPrefKey = "Acceleration"
             },
             new SliderConfig {
                  variableName = "angularVelocity",
                  minValue = -5,
                  maxValue = 5,
+                 defaultValue = -2.2f,
                  playerPrefKey = "AngularVelocity"
             },
             new SliderConfig {
                  variableName = "steeringA",
                  minValue = -5,
                  maxValue = 5,
+                 defaultValue = 1.5f,
                  playerPrefKey = "SteeringA"
             },
             new SliderConfig {
                  variableName = "steeringB",
                  minValue = -0.1f,
                  maxValue = 0.1f,
+                 defaultValue = 0.05f,
                  playerPrefKey = "SteeringB"
             },
             new SliderConfig {
                  variableName = "steeringC",
                  minValue = -0.5f,
                  maxValue = 0.5f,
+                 defaultValue = 0.297f,
                  playerPrefKey = "SteeringC"
             },
             new SliderConfig {
                  variableName = "nitroFactor",
                  minValue = 1,
-                 maxValue = 2,
+                 maxValue = 5,
+                 defaultValue = 2f,
                  playerPrefKey = "NitroFactor"
             },
             new SliderConfig {
                  variableName = "nitroDuration",
                  minValue = 0,
                  maxValue = 10,
+                 defaultValue = 2f,
                  playerPrefKey = "NitroDuration"
             },
             new SliderConfig {
                  variableName = "nitroCoolDown",
                  minValue = 0,
                  maxValue = 10,
+                 defaultValue = 5,
                  playerPrefKey = "NitroCoolDown"
             },
             new SliderConfig {
                  variableName = "forwardsFriction",
                  minValue = 0,
                  maxValue = 0.1f,
+                 defaultValue = 0.04f,
                  playerPrefKey = "ForwardsFriction"
             },
             new SliderConfig {
                  variableName = "sidewaysFriction",
                  minValue = 0,
                  maxValue = 20,
+                 defaultValue = 10,
                  playerPrefKey = "SidewaysFriction"
             },
             new SliderConfig {
                  variableName = "airResistance",
                  minValue = 0,
                  maxValue = 0.05f,
+                 defaultValue = 0.003f,
                  playerPrefKey = "AirResistance"
             },
             new SliderConfig {
                  variableName = "gravityValue",
                  minValue = 0,
                  maxValue = 30,
+                 defaultValue = 7.5f,
                  playerPrefKey = "GravityValue"
             },
             new SliderConfig {
                  variableName = "turnBiasFactor",
-                 minValue = 0.5f,
+                 minValue = 0f,
                  maxValue = 5,
+                 defaultValue = 1.0f,
                  playerPrefKey = "TurnBiasFactor"
             },
             new SliderConfig {
                  variableName = "turnBiasBias",
                  minValue = 0,
-                 maxValue = 1,
+                 maxValue = 5,
+                 defaultValue = 0.2f,
                  playerPrefKey = "TurnBiasBias"
             },
             new SliderConfig {
                  variableName = "suspensionDistance",
                  minValue = 0,
                  maxValue = 1,
+                 defaultValue = 0.5f,
                  playerPrefKey = "SuspensionDistance"
             },
             //slider configs for tilt amount, shift amount and shift lerp rate
@@ -118,6 +138,7 @@ public class VariableSliderManager : MonoBehaviour
                variableName = "tiltAmount",
                minValue = 0,
                maxValue = 180,
+               defaultValue = 96.83f,
                playerPrefKey = "TiltAmount"
             },
             new SliderConfig
@@ -125,6 +146,7 @@ public class VariableSliderManager : MonoBehaviour
                variableName = "shiftAmount",
                minValue = 0,
                maxValue = 20,
+               defaultValue = 3.372f,
                playerPrefKey = "ShiftAmount"
             },
             new SliderConfig
@@ -132,6 +154,7 @@ public class VariableSliderManager : MonoBehaviour
                variableName = "shiftLerpRate",
                minValue = 0,
                maxValue = 20,
+               defaultValue = 3.519f,
                playerPrefKey = "ShiftLerpRate"
             }
           };
@@ -142,12 +165,35 @@ public class VariableSliderManager : MonoBehaviour
           }
      }
 
-     void InstantiateSlider(SliderConfig config)
+    public void resetValuesToDefault()
+    {
+        foreach(var sliderObject in sliderObjects)
+        {
+            sliderObject.SetValueDirectly(sliderObject.myConfig.defaultValue);
+        }
+    }
+
+    public void copyValuesToClipboard()
+    {
+        string toCopy = "";
+        foreach(var sliderObject in sliderObjects)
+        {
+            toCopy += sliderObject.myConfig.variableName + ": " + sliderObject.slider.value;
+            toCopy += "\n";
+        }
+
+        GUIUtility.systemCopyBuffer = toCopy;
+        Debug.Log("Data copied to clipboard!");
+    }
+
+    void InstantiateSlider(SliderConfig config)
      {
-          GameObject sliderInstance = Instantiate(variableSliderPrefab, transform);
+          GameObject sliderInstance = Instantiate(variableSliderPrefab, sliderParent);
           VariableSlider variableSlider = sliderInstance.GetComponent<VariableSlider>();
+          sliderObjects.Add(variableSlider);
 
           variableSlider.SetupSlider(config.minValue, config.maxValue, GetVariableSetter(config.variableName), config.playerPrefKey);
+        variableSlider.myConfig = config;
      }
 
      System.Action<float> GetVariableSetter(string variableName)

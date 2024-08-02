@@ -7,6 +7,7 @@ public class VariableSlider : MonoBehaviour
      public Slider slider;
      public Text nameText;
      public Text valueText;
+    public VariableSliderManager.SliderConfig myConfig;
 
      private string playerPrefKey;
      private System.Action<float> setVariableAction;
@@ -28,16 +29,24 @@ public class VariableSlider : MonoBehaviour
 
           // Update the UI texts
           nameText.text = playerPrefKey;
-          valueText.text = savedValue.ToString("F2");
+          valueText.text = savedValue.ToString("F3");
 
           // Add listener for value changes
           slider.onValueChanged.AddListener(OnSliderValueChanged);
      }
 
+
+     public void SetValueDirectly(float value)
+    {
+        slider.value = value;
+        slider.SetValueWithoutNotify(value);
+        OnSliderValueChanged(value);
+    }
+
      private void OnSliderValueChanged(float value)
      {
           // Update the text field
-          valueText.text = value.ToString("F2");
+          valueText.text = value.ToString("F3");
 
           // Save the value to the file
           SaveValueToFile(playerPrefKey, value);

@@ -281,9 +281,9 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             @SteerTilt.started += instance.OnSteerTilt;
             @SteerTilt.performed += instance.OnSteerTilt;
             @SteerTilt.canceled += instance.OnSteerTilt;
-            @Drift.started += instance.OnDrift;
-            @Drift.performed += instance.OnDrift;
-            @Drift.canceled += instance.OnDrift;
+            @Drift.started += instance.OnNitro;
+            @Drift.performed += instance.OnNitro;
+            @Drift.canceled += instance.OnNitro;
         }
 
         private void UnregisterCallbacks(ICarControlActions instance)
@@ -300,9 +300,9 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             @SteerTilt.started -= instance.OnSteerTilt;
             @SteerTilt.performed -= instance.OnSteerTilt;
             @SteerTilt.canceled -= instance.OnSteerTilt;
-            @Drift.started -= instance.OnDrift;
-            @Drift.performed -= instance.OnDrift;
-            @Drift.canceled -= instance.OnDrift;
+            @Drift.started -= instance.OnNitro;
+            @Drift.performed -= instance.OnNitro;
+            @Drift.canceled -= instance.OnNitro;
         }
 
         public void RemoveCallbacks(ICarControlActions instance)
@@ -344,6 +344,6 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         void OnAccelerate(InputAction.CallbackContext context);
         void OnBack(InputAction.CallbackContext context);
         void OnSteerTilt(InputAction.CallbackContext context);
-        void OnDrift(InputAction.CallbackContext context);
+        void OnNitro(InputAction.CallbackContext context);
     }
 }

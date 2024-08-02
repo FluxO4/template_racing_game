@@ -42,7 +42,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Drift",
+                    "name": "Nitro",
                     "type": "PassThrough",
                     "id": "22145ad6-7f5a-4d31-90fa-6d84aa8471f5",
                     "expectedControlType": "Button",
@@ -136,7 +136,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drift",
+                    "action": "Nitro",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -9,9 +9,9 @@ public class BrakeControl : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
      {
           if (carHybrid != null)
           {
-               carHybrid.accelerating = false;
+               //carHybrid.accelerating = false;
                carHybrid.backing = true;
-               Debug.Log("Brake is pressed: " + carHybrid.backing);
+               Debug.Log("Brake is pressed: " + carHybrid.vertical);
           }
      }
 
@@ -19,9 +19,9 @@ public class BrakeControl : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
      {
           if (carHybrid != null)
           {
-               carHybrid.accelerating = true;
+               //carHybrid.accelerating = true;
                carHybrid.backing = false;
-               Debug.Log("Brake is pressed: " + carHybrid.backing);
+               Debug.Log("Brake is pressed: " + carHybrid.vertical);
           }
      }
      // Public methods to be called by Event Trigger
