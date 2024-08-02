@@ -108,21 +108,21 @@ public class VariableSliderManager : MonoBehaviour
                  variableName = "gravityValue",
                  minValue = 0,
                  maxValue = 30,
-                 defaultValue = 7.5f,
+                 defaultValue = 15.685f,
                  playerPrefKey = "GravityValue"
             },
             new SliderConfig {
                  variableName = "turnBiasFactor",
                  minValue = 0f,
                  maxValue = 5,
-                 defaultValue = 1.0f,
+                 defaultValue = 0.0f,
                  playerPrefKey = "TurnBiasFactor"
             },
             new SliderConfig {
                  variableName = "turnBiasBias",
                  minValue = 0,
                  maxValue = 5,
-                 defaultValue = 0.2f,
+                 defaultValue = 0.513f,
                  playerPrefKey = "TurnBiasBias"
             },
             new SliderConfig {
