@@ -10,11 +10,13 @@ TagManager:
   - Player Car
   - Start Spot
   - Start Region
+  - CrossSection
+  - RaceCircuitRootObject
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Wheels
   - Water
   - UI
   - Obstacle
