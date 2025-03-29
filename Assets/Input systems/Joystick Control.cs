@@ -64,7 +64,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Drift"",
+                    ""name"": ""Nitro"",
                     ""type"": ""PassThrough"",
                     ""id"": ""22145ad6-7f5a-4d31-90fa-6d84aa8471f5"",
                     ""expectedControlType"": ""Button"",
@@ -158,7 +158,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Drift"",
+                    ""action"": ""Nitro"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -184,7 +184,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         m_CarControl_Accelerate = m_CarControl.FindAction("Accelerate", throwIfNotFound: true);
         m_CarControl_Back = m_CarControl.FindAction("Back", throwIfNotFound: true);
         m_CarControl_SteerTilt = m_CarControl.FindAction("SteerTilt", throwIfNotFound: true);
-        m_CarControl_Drift = m_CarControl.FindAction("Drift", throwIfNotFound: true);
+        m_CarControl_Nitro = m_CarControl.FindAction("Nitro", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -250,7 +250,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
     private readonly InputAction m_CarControl_Accelerate;
     private readonly InputAction m_CarControl_Back;
     private readonly InputAction m_CarControl_SteerTilt;
-    private readonly InputAction m_CarControl_Drift;
+    private readonly InputAction m_CarControl_Nitro;
     public struct CarControlActions
     {
         private @JoystickControl m_Wrapper;
@@ -259,7 +259,7 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
         public InputAction @Accelerate => m_Wrapper.m_CarControl_Accelerate;
         public InputAction @Back => m_Wrapper.m_CarControl_Back;
         public InputAction @SteerTilt => m_Wrapper.m_CarControl_SteerTilt;
-        public InputAction @Drift => m_Wrapper.m_CarControl_Drift;
+        public InputAction @Nitro => m_Wrapper.m_CarControl_Nitro;
         public InputActionMap Get() { return m_Wrapper.m_CarControl; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -281,9 +281,9 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             @SteerTilt.started += instance.OnSteerTilt;
             @SteerTilt.performed += instance.OnSteerTilt;
             @SteerTilt.canceled += instance.OnSteerTilt;
-            @Drift.started += instance.OnNitro;
-            @Drift.performed += instance.OnNitro;
-            @Drift.canceled += instance.OnNitro;
+            @Nitro.started += instance.OnNitro;
+            @Nitro.performed += instance.OnNitro;
+            @Nitro.canceled += instance.OnNitro;
         }
 
         private void UnregisterCallbacks(ICarControlActions instance)
@@ -300,9 +300,9 @@ public partial class @JoystickControl: IInputActionCollection2, IDisposable
             @SteerTilt.started -= instance.OnSteerTilt;
             @SteerTilt.performed -= instance.OnSteerTilt;
             @SteerTilt.canceled -= instance.OnSteerTilt;
-            @Drift.started -= instance.OnNitro;
-            @Drift.performed -= instance.OnNitro;
-            @Drift.canceled -= instance.OnNitro;
+            @Nitro.started -= instance.OnNitro;
+            @Nitro.performed -= instance.OnNitro;
+            @Nitro.canceled -= instance.OnNitro;
         }
 
         public void RemoveCallbacks(ICarControlActions instance)
