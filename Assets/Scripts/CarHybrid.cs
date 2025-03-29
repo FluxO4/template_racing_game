@@ -177,7 +177,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
     public Transform[] wheelMeshes = new Transform[4];
 
     float vInput = 0;
-    float hInput = 0;
+    public float hInput = 0;
     public Text vInputText;
     public Text hInputText;
 
@@ -280,7 +280,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
         Vector2 vectorValue = context.ReadValue<Vector2>();
         vInput = vectorValue.y;
         hInput = vectorValue.x;
-
+        //Debug.Log("ON STEER TRIGGERED: " + vectorValue);
     }
 
     public void OnAccelerate(InputAction.CallbackContext context)
@@ -426,7 +426,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
         horizontal = 0;
         bool brake = false;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
           //Accelerometer
           Vector3 vectorValue = Input.acceleration;
           //Debug.Log("Detected vector: " + vectorValue);
@@ -439,7 +439,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
             horizontal = hInput;
 
-            float biasedHorizontalCubicComplement = (1 - Mathf.Abs(Mathf.Pow(horizontal, 3)));
+            float biasedHorizontalCubicComplement = 0.2f + 0.8f * (1 - Mathf.Abs(Mathf.Pow(horizontal, 3)));
 
             //drifting condition
             if(Mathf.Abs(horizontal) >= driftTurnThreshold && speed >= driftSpeed && !drifting)
@@ -581,7 +581,9 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
         // air resistance
         forces += -rb.velocity.sqrMagnitude * (rb.velocity.normalized) * airResistance;
-
+        
+        rb.AddForce(Vector3.down * gravityValue, ForceMode.Acceleration); //Gravity
+        
         rb.AddForce(forces, ForceMode.Acceleration);
 
         speed = Vector3.ProjectOnPlane(rb.velocity, transform.up).magnitude;
@@ -644,7 +646,7 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
         //Gravity
 
-        rb.AddForce(Vector3.down * gravityValue, ForceMode.Acceleration);
+       
 
 
         if (IsOnGround)

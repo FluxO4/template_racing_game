@@ -34,6 +34,15 @@ public class VariableSliderManager : MonoBehaviour
                  defaultValue = 17f,
                  playerPrefKey = "Acceleration"
             },
+            new SliderConfig
+            {
+               variableName = "tilt sensitivity",
+               minValue = 0,
+               maxValue = 5,
+               defaultValue = 1.0f,
+               playerPrefKey = "TiltInputMultiplier"
+            },
+
             new SliderConfig {
                  variableName = "angularVelocity",
                  minValue = -5,
@@ -133,22 +142,14 @@ public class VariableSliderManager : MonoBehaviour
                  playerPrefKey = "SuspensionDistance"
             },
             //slider configs for tilt amount, shift amount and shift lerp rate
-            new SliderConfig
-            {
-               variableName = "tiltInputMultiplier",
-               minValue = 0,
-               maxValue = 5,
-               defaultValue = 2,
-               playerPrefKey = "TiltInputMultiplier"
-            },
-
+            
 
             new SliderConfig
             {
                variableName = "tiltAmount",
                minValue = 0,
                maxValue = 180,
-               defaultValue = 96.83f,
+               defaultValue = 2,
                playerPrefKey = "TiltAmount"
             },
             new SliderConfig
@@ -254,7 +255,7 @@ public class VariableSliderManager : MonoBehaviour
                               wheel.suspensionDistance = value;
                          }
                     };
-            case "tiltInputMultiplier":
+            case "tilt sensitivity":
                 return value => carHybrid.tiltInputMultiplier = value;
                case "tiltAmount":
                     return value => cameraTiltAndShift.tiltAmount = value;

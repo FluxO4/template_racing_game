@@ -56,19 +56,19 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 1.5
     m_AsymptoteValue: 0.8
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 2
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 1.5
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
@@ -282,19 +282,19 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 1.5
     m_AsymptoteValue: 0.8
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 2
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 1.5
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
@@ -5238,7 +5238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6337389294822018937}
   - component: {fileID: 2910458093353421282}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wheel FR Visual (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5338,19 +5338,19 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 1.5
     m_AsymptoteValue: 0.8
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 2
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 1.5
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
@@ -5380,7 +5380,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6994186984565715126}
   - component: {fileID: 4483275661935181664}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wheel FL Visual (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5613,7 +5613,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -10475,8 +10475,10 @@ MonoBehaviour:
   - {fileID: 6337389294822018937}
   - {fileID: 0}
   - {fileID: 0}
+  hInput: 0
   vInputText: {fileID: 0}
   hInputText: {fileID: 0}
+  tiltInputMultiplier: 2
   accelerating: 0
   autoAccelerating: 0
   backing: 0
@@ -10508,7 +10510,7 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: PS3 Controller
   m_DefaultActionMap: Car Control
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -10531,8 +10533,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 1.117645, y: 0.08201492, z: 2.163114}
-  m_Center: {x: 0.0021785498, y: -0.7116261, z: -0.09880209}
+  m_Size: {x: 1.117645, y: 0.43127966, z: 3.381999}
+  m_Center: {x: 0.0021785498, y: -0.53699374, z: -0.004227221}
 --- !u!1 &4556211891718603327
 GameObject:
   m_ObjectHideFlags: 0
@@ -10627,7 +10629,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2260509298209956835}
   - component: {fileID: 8849405321935991718}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wheel RL Visual (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10681,7 +10683,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3595414719882523251}
   - component: {fileID: 6813437015120976429}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wheel RR Visual (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10781,19 +10783,19 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 1.5
     m_AsymptoteValue: 0.8
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 2
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 1.5
-    m_Stiffness: 1
+    m_Stiffness: 0.1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
