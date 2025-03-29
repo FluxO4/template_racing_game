@@ -1,131 +1,85 @@
-# Racing Game Configuration Variables
+# Car Configuration Variable Descriptions
 
-This document describes all configuration variables that control the vehicle physics, handling, and camera effects in the racing game.
+This document explains the configuration variables used to control the car's movement, physics, nitro, and camera behavior. These variables are typically adjusted via sliders managed by `VariableSliderManager.cs`.
 
-## Physics & Movement
+## Core Physics & Movement
 
-### Acceleration
-- **Description**: Controls how quickly the car accelerates and reaches top speed.
-- **Range**: 0-100
-- **Default**: 17.0
-- **Effect**: Higher values create more responsive acceleration and higher top speeds. Lower values make the car feel heavier and slower to respond.
+*   **`acceleration`**: (Float)
+    *   Determines the base rate at which the car gains speed when accelerating forward. Higher values mean faster acceleration.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`, `CarAI.cs`
 
-### Angular Velocity
-- **Description**: Controls how quickly the car can rotate/turn.
-- **Range**: -5 to 5
-- **Default**: -2.2
-- **Effect**: Affects turning radius and responsiveness. Higher absolute values make sharper turns possible but may make the car harder to control.
+*   **`angularVelocity`**: (Float)
+    *   Controls the base speed at which the car rotates (turns) when steering input is applied. Higher values result in faster turning. This is modulated by the `SteeringValue` function based on speed.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Forwards Friction
-- **Description**: Resistance to movement in the forward direction.
-- **Range**: 0-0.1
-- **Default**: 0.04
-- **Effect**: Higher values increase braking effect and make the car decelerate faster. Lower values give a "slippery" forward feeling.
+*   **`forwardsFriction`**: (Float)
+    *   Represents the force opposing the car's movement in its forward/backward direction when on the ground. Higher values cause the car to slow down faster when not accelerating.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Sideways Friction
-- **Description**: Resistance to lateral (side-to-side) movement.
-- **Range**: 0-20
-- **Default**: 10
-- **Effect**: Higher values increase grip during turns and reduce sliding. Lower values make drifting easier but can make the car feel unstable.
+*   **`sidewaysFriction`**: (Float)
+    *   Represents the force opposing the car's movement sideways (resisting sliding/drifting) when on the ground. Higher values provide more grip and make drifting harder. This value might be dynamically adjusted during drifting.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Air Resistance
-- **Description**: How much the car slows down due to air resistance.
-- **Range**: 0-0.05
-- **Default**: 0.003
-- **Effect**: Affects deceleration at high speeds. Higher values create a more pronounced slowing effect as speed increases.
+*   **`airResistance`**: (Float)
+    *   A factor determining how much the car's speed is reduced due to air drag. It's typically proportional to the square of the car's velocity. Higher values mean more drag, slowing the car down more significantly at higher speeds.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`, `CarController.cs`
 
-### Gravity Value
-- **Description**: The strength of gravity applied to the car.
-- **Range**: 0-30
-- **Default**: 15.685
-- **Effect**: Affects how quickly the car falls and how it behaves on slopes. Higher values make the car feel heavier and more grounded.
+*   **`gravityValue`**: (Float)
+    *   The magnitude of the downward force applied to the car to simulate gravity. Standard gravity is approximately 9.81, but this can be tuned for gameplay.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs` (Note: `Car.cs` doesn't seem to apply gravity explicitly, relying on Rigidbody settings. `CarController.cs` uses `downForce` instead).
 
-### Suspension Distance
-- **Description**: How far the wheels can extend from the car body.
-- **Range**: 0-1
-- **Default**: 0.5
-- **Effect**: Affects how the car handles bumps and uneven terrain. Higher values allow better absorption of bumps but may make the car feel "bouncy".
+*   **`suspensionDistance`**: (Float)
+    *   Controls the maximum travel distance of the `WheelCollider`'s suspension along its local Y-axis. Affects how the car body reacts to bumps and terrain changes.
+    *   Used in: `VariableSliderManager.cs` (sets `WheelCollider.suspensionDistance`)
 
-## Steering Controls
+## Steering & Drifting
 
-### Steering A
-- **Description**: Scaling factor in the steering formula.
-- **Range**: -5 to 5
-- **Default**: 1.5
-- **Effect**: Affects overall steering sensitivity. Higher values make steering more responsive.
+*   **`steeringA`, `steeringB`, `steeringC`**: (Floats)
+    *   Parameters used in the `SteeringValue(speed)` function, which calculates the effective steering angle based on the car's current speed. This function likely models how steering becomes less sensitive at higher speeds.
+        *   `steeringA`: Seems to be a primary multiplier for the steering curve.
+        *   `steeringB`, `steeringC`: Shape the curve, likely affecting how quickly sensitivity drops off with speed.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Steering B
-- **Description**: Denominator factor in the steering formula.
-- **Range**: -0.1 to 0.1
-- **Default**: 0.05
-- **Effect**: Controls how quickly steering response diminishes at higher speeds. Higher values reduce steering effectiveness at high speeds.
+*   **`turnBiasFactor`**: (Float)
+    *   A multiplier applied to the horizontal input when initiating a drift (often combined with braking/backing). It exaggerates the turn angle to help induce a drift.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Steering C
-- **Description**: Input scaling factor in the steering formula.
-- **Range**: -0.5 to 0.5
-- **Default**: 0.297
-- **Effect**: Fine-tunes the steering response curve. Adjusts sensitivity throughout the steering range.
+*   **`turnBiasBias`**: (Float)
+    *   An additional fixed angle added (with the sign of the horizontal input) when initiating a drift. Works with `turnBiasFactor` to force a sharper turn for drifting.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Turn Bias Factor
-- **Description**: Affects additional turning force during drifting.
-- **Range**: 0-5
-- **Default**: 0.0
-- **Effect**: Higher values increase the bias in turning direction during drifts, making drifts more pronounced.
+## Nitro Boost
 
-### Turn Bias Bias
-- **Description**: Constant bias added to turning during drifts.
-- **Range**: 0-5
-- **Default**: 0.513
-- **Effect**: Higher values make drifts more stable and predictable but may make them harder to initiate.
+*   **`nitroFactor`**: (Float)
+    *   A multiplier applied to the car's acceleration (or added to vertical input in `CarHybrid`) when the nitro boost is active. A value of 2 means double acceleration during boost.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`, `CarController.cs`
 
-## Nitro System
+*   **`nitroDuration`**: (Float)
+    *   The length of time (in seconds) a single nitro boost lasts.
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`
 
-### Nitro Factor
-- **Description**: Acceleration multiplier when nitro is active.
-- **Range**: 1-5
-- **Default**: 2.0
-- **Effect**: How much faster the car accelerates with nitro. Higher values give more dramatic speed boosts.
+*   **`nitroCoolDown`**: (Float)
+    *   The time (in seconds) the player must wait after a nitro boost ends before they can use it again (or before the charge starts regenerating, depending on implementation).
+    *   Used in: `CarHybrid.cs`, `CarSwiftPhys.cs`, `Car.cs`, `CarController.cs` (as `nitroCooldown`)
 
-### Nitro Duration
-- **Description**: How long (in seconds) nitro boost lasts.
-- **Range**: 0-10
-- **Default**: 2.0
-- **Effect**: Longer durations allow extended boost periods but should be balanced with cooldown.
+## Camera & Input (Mobile Tilt)
 
-### Nitro Cool Down
-- **Description**: Waiting time (in seconds) before nitro can be used again.
-- **Range**: 0-10
-- **Default**: 5.0
-- **Effect**: Controls nitro usage frequency. Lower values allow more frequent use but may make the game less balanced.
+*   **`tiltInputMultiplier`**: (Float)
+    *   A multiplier applied to the raw accelerometer input (X-axis) to determine the horizontal steering input on mobile devices. Higher values make tilt steering more sensitive.
+    *   Used in: `CarHybrid.cs`
 
-## Camera Effects
+*   **`tiltAmount`**: (Float)
+    *   The maximum angle (in degrees) the camera will tilt (roll) left or right based on the phone's accelerometer input (X-axis).
+    *   Used in: `CameraTiltAndShift.cs`
 
-### Tilt Input Multiplier
-- **Description**: Multiplier for accelerometer input (mobile controls).
-- **Range**: 0-5
-- **Default**: 2.0
-- **Effect**: Higher values increase steering sensitivity when using tilt controls.
+*   **`shiftAmount`**: (Float)
+    *   The maximum distance the camera will shift horizontally (left/right) based on the phone's accelerometer input (X-axis).
+    *   Used in: `CameraTiltAndShift.cs`
 
-### Tilt Amount
-- **Description**: Maximum camera tilt angle during turns.
-- **Range**: 0-180
-- **Default**: 96.83
-- **Effect**: Controls how much the camera rotates along the z-axis when turning. Higher values give a more dramatic visual effect.
+*   **`tiltLerpRate`**: (Float)
+    *   Controls the speed at which the camera smoothly interpolates (lerps) towards the target tilt angle calculated from accelerometer input. Higher values mean faster, potentially snappier, tilting.
+    *   Used in: `CameraTiltAndShift.cs`
 
-### Shift Amount
-- **Description**: How far the camera shifts position during turns.
-- **Range**: 0-20
-- **Default**: 3.372
-- **Effect**: Controls lateral camera movement when turning. Higher values create a more pronounced sensation of movement.
-
-### Shift Lerp Rate
-- **Description**: How quickly the camera shift effect interpolates.
-- **Range**: 0-20
-- **Default**: 3.519
-- **Effect**: Controls smoothness of camera position shifting. Higher values make camera movements more responsive but potentially jerky.
-
-### Tilt Lerp Rate
-- **Description**: How quickly the camera tilt effect interpolates.
-- **Range**: 0-20
-- **Default**: 3.519
-- **Effect**: Controls smoothness of camera rotation. Higher values make tilting more responsive but potentially jerky.
+*   **`shiftLerpRate`**: (Float)
+    *   Controls the speed at which the camera smoothly interpolates (lerps) towards the target horizontal shift position calculated from accelerometer input. Higher values mean faster, potentially snappier, shifting.
+    *   Used in: `CameraTiltAndShift.cs`
