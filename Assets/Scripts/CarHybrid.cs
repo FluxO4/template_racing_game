@@ -221,6 +221,9 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
 
     private JoystickControl controls;
 
+    public bool stuckTriggered;
+
+
     private void Awake()
     {
         controls = new JoystickControl();
@@ -501,8 +504,10 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
             }
 
 
-            brake = Input.GetKey(KeyCode.Space);
+            //brake = Input.GetKey(KeyCode.Space);
         }
+        
+ 
 
 
         //Checking grounding through the wheel colliders rather than a dedicated grounding collider
@@ -571,22 +576,32 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
             frictionVelocity += -sidewaysVelocity;
         }
 
-        if (isOnGround)
-        {
-            // accelerator
+        // Modify force application
+        if (isOnGround) {
             forces += transform.forward * currentAcceleration * vertical;
-            // friction
+            
+            if(!stuckTriggered)
             forces += frictionVelocity / Time.fixedDeltaTime;
         }
 
         // air resistance
         forces += -rb.velocity.sqrMagnitude * (rb.velocity.normalized) * airResistance;
-        
-        rb.AddForce(Vector3.down * gravityValue, ForceMode.Acceleration); //Gravity
+
+        if (!stuckTriggered)
+        {
+            rb.AddForce(Vector3.down * gravityValue, ForceMode.Acceleration);
+        }
+        else
+        {
+            rb.AddForce(Vector3.down * gravityValue * 0.2f, ForceMode.Acceleration);
+        }
+    
         
         rb.AddForce(forces, ForceMode.Acceleration);
 
         speed = Vector3.ProjectOnPlane(rb.velocity, transform.up).magnitude;
+        
+        
 
         // turning
 
@@ -600,8 +615,14 @@ public class CarHybrid : MonoBehaviour, JoystickControl.ICarControlActions
         if (isOnGround)
             rb.AddTorque(-Vector3.up * (horizontal) * steeringValue * angularVelocity * Time.fixedDeltaTime, ForceMode.VelocityChange);
 
+        // Fix steering at low speeds
+        float velocityMagnitude = rb.velocity.magnitude;
+        bool isEffectivelyMoving = velocityMagnitude > 0.5f;
+        if (isEffectivelyMoving && Vector3.Dot(rb.velocity, transform.forward) < 0)
+            horizontal *= -1;
 
-        float wheelColliderSteerAngle = Mathf.Clamp(1 / (wheelColliderSteerTime * rb.velocity.magnitude + 0.1f), 0, 25);
+// Improve wheel collider steering logic
+        float wheelColliderSteerAngle = Mathf.Clamp(1 / (wheelColliderSteerTime * Mathf.Max(velocityMagnitude, 1.0f) + 0.1f), 0, 25);
         //Debug.Log(wheelColliderSteerAngle);
         if (wheelMeshes[0] && wheelMeshes[1])
         {
